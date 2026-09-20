@@ -1,2 +1,2 @@
-# Mascotas y Vacunas
+# 🐾 Mascotas y Vacunas
 Aplicación Android para gestionar mascotas y vacunas.
