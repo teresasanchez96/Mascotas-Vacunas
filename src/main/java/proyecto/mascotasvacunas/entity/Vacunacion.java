@@ -21,7 +21,7 @@ public class Vacunacion {
     private LocalDate fechaPrevista;
 
     @Column(nullable = false)
-    private Boolean puesta;
+    private Boolean vacunaAdministrada;
 
     @Column
     private LocalDate fechaAdministracion;
@@ -39,11 +39,11 @@ public class Vacunacion {
     public Vacunacion() {
     }
 
-    public Vacunacion(LocalDate fechaPrevista, Boolean puesta,
+    public Vacunacion(LocalDate fechaPrevista, Boolean vacunaAdministrada,
                       LocalDate fechaAdministracion, Mascota mascota,
                       Vacuna vacuna) {
         this.fechaPrevista = fechaPrevista;
-        this.puesta = puesta;
+        this.vacunaAdministrada = vacunaAdministrada;
         this.fechaAdministracion = fechaAdministracion;
         this.mascota = mascota;
         this.vacuna = vacuna;
@@ -65,12 +65,12 @@ public class Vacunacion {
         this.fechaPrevista = fechaPrevista;
     }
 
-    public Boolean getPuesta() {
-        return puesta;
+    public Boolean getVacunaAdministrada() {
+        return vacunaAdministrada;
     }
 
-    public void setPuesta(Boolean puesta) {
-        this.puesta = puesta;
+    public void setVacunaAdministrada(Boolean vacunaAdministrada) {
+        this.vacunaAdministrada = vacunaAdministrada;
     }
 
     public LocalDate getFechaAdministracion() {
@@ -102,7 +102,7 @@ public class Vacunacion {
         return "Vacunacion{" +
                 "id=" + id +
                 ", fechaPrevista=" + fechaPrevista +
-                ", puesta=" + puesta +
+                ", vacunaAdministrada=" + vacunaAdministrada +
                 ", fechaAdministracion=" + fechaAdministracion +
                 '}';
     }

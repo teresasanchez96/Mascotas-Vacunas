@@ -41,7 +41,7 @@ public class VacunacionService {
         Vacunacion vacunacion = findById(id);
 
         vacunacion.setFechaPrevista(vacunacionDetails.getFechaPrevista());
-        vacunacion.setPuesta(vacunacionDetails.getPuesta());
+        vacunacion.setVacunaAdministrada(vacunacionDetails.getVacunaAdministrada());
         vacunacion.setFechaAdministracion(
                 vacunacionDetails.getFechaAdministracion()
         );
