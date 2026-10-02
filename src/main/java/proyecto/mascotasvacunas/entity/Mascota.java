@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 /*
  * Esta clase representa una mascota de la aplicación.
- * Contiene sus datos y la relación con su usuario y sus vacunaciones.
+ * Contiene sus datos y la relación con su usuario
  */
 @Entity
 @Table(name = "mascotas")

@@ -63,4 +63,32 @@ He realizado los siguientes commits:
 
 `Implementar autenticación de usuarios con JWT y BCrypt`
 
-`Implementar aislamiento de mascotas por usuario`
+## Día 3 — Desarrollo y pruebas de la API
+
+### Trabajo realizado
+
+He continuado con el desarrollo de la API REST, adaptando los servicios, repositorios y controladores para completar la gestión de mascotas, vacunas y vacunaciones teniendo en cuenta el usuario autenticado.
+
+También he realizado pruebas mediante Postman para comprobar el funcionamiento de la gestión de mascotas, vacunas y vacunaciones.
+
+He realizado pruebas de acceso con distintos usuarios para comprobar que cada usuario pueda acceder únicamente a sus propios datos.
+
+Durante las pruebas de vacunaciones he corregido la configuración de la relación con la vacuna para permitir recibir correctamente su identificador al crear una nueva vacunación.
+
+Por último, he comprobado el funcionamiento de la API después de realizar estos cambios.
+
+### Uso de IA
+
+He utilizado ChatGPT como herramienta de apoyo durante el desarrollo para revisar los cambios realizados en los servicios, repositorios y controladores, analizar posibles problemas y resolver dudas durante las pruebas de la API.
+
+Las propuestas obtenidas se han revisado y probado durante el desarrollo antes de incorporarlas al proyecto.
+
+### Control de versiones
+
+He realizado los siguientes commits:
+
+`Actualizar acceso a mascotas, vacunas y vacunaciones`
+
+`Actualizar configuración de JWT`
+
+`Actualizar documentación del proyecto`

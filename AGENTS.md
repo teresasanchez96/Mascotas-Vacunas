@@ -2,27 +2,25 @@
 
 ## Proyecto
 
-Mascotas y Vacunas es un proyecto de desarrollo de una aplicación móvil
-Android para la gestión de mascotas, vacunas y vacunaciones.
+Mascotas y Vacunas es un proyecto de desarrollo de una aplicación para la gestión de mascotas, vacunas y vacunaciones.
 
-El proyecto se desarrolla de forma incremental y se divide en varias
-entregas.
+El proyecto se desarrolla de forma incremental y se divide en varias entregas.
+
+Actualmente se está desarrollando el backend mediante una API REST.
 
 ## Arquitectura
 
-El proyecto está compuesto por:
+El proyecto contará con:
 
 - Una aplicación Android desarrollada con Kotlin y Jetpack Compose.
 - Un backend desarrollado con Spring Boot que expone una API REST.
 - Una base de datos MariaDB.
 
-La comunicación entre la aplicación Android y el backend se realizará
-mediante la API REST.
+La comunicación entre la aplicación Android y el backend se realizará mediante la API REST.
 
 ## Forma de trabajo con IA
 
-La inteligencia artificial se utilizará como asistente de desarrollo
-y aprendizaje, no como sustituto de las decisiones del desarrollador.
+La inteligencia artificial se utilizará como asistente de desarrollo y aprendizaje, no como sustituto de las decisiones del desarrollador.
 
 Antes de implementar una funcionalidad importante, se deberá:
 
@@ -39,10 +37,10 @@ Antes de implementar una funcionalidad importante, se deberá:
 - Evitar introducir funcionalidades no solicitadas.
 - Mantener una arquitectura sencilla y comprensible.
 - Reutilizar soluciones y patrones que ya hayan sido probados en el proyecto.
-- Evitar modificaciones innecesarias en archivos que no estén relacionados
-  con la funcionalidad que se está implementando.
+- Evitar modificaciones innecesarias en archivos que no estén relacionados con la funcionalidad que se está implementando.
 - Explicar los cambios realizados cuando sea necesario.
 - Priorizar código mantenible y fácil de comprender.
+- Probar los cambios realizados antes de considerarlos terminados.
 
 ## Uso de la IA
 
@@ -56,5 +54,4 @@ La IA puede utilizarse para:
 - Revisar errores y proponer soluciones.
 - Generar documentación.
 
-Las decisiones finales sobre la arquitectura y la implementación
-corresponden al desarrollador.
+Las decisiones finales sobre la arquitectura y la implementación corresponden al desarrollador.
