@@ -20,39 +20,52 @@ public class VacunaController {
         this.vacunaService = vacunaService;
     }
 
-    // Devuelve todas las vacunas.
+    // Obtiene todas las vacunas.
     @GetMapping
-    public List<Vacuna> findAll() {
+    public List<Vacuna> getAllVacunas() {
         return vacunaService.findAll();
     }
 
     // Busca una vacuna por su ID.
     @GetMapping("/{id}")
-    public ResponseEntity<Vacuna> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(vacunaService.findById(id));
+    public ResponseEntity<Vacuna> getVacunaById(@PathVariable Long id) {
+        try {
+            Vacuna vacuna = vacunaService.findById(id);
+            return ResponseEntity.ok(vacuna);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // Guarda una vacuna.
     @PostMapping
-    public ResponseEntity<Vacuna> save(@RequestBody Vacuna vacuna) {
+    public ResponseEntity<Vacuna> saveVacuna(@RequestBody Vacuna vacuna) {
         return ResponseEntity.ok(vacunaService.save(vacuna));
     }
 
     // Actualiza una vacuna.
     @PutMapping("/{id}")
-    public ResponseEntity<Vacuna> update(
+    public ResponseEntity<Vacuna> updateVacuna(
             @PathVariable Long id,
             @RequestBody Vacuna vacuna) {
 
-        return ResponseEntity.ok(
-                vacunaService.update(id, vacuna)
-        );
+        try {
+            return ResponseEntity.ok(
+                    vacunaService.update(id, vacuna)
+            );
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // Elimina una vacuna.
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        vacunaService.delete(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deleteVacuna(@PathVariable Long id) {
+        try {
+            vacunaService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

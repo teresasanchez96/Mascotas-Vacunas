@@ -20,39 +20,82 @@ public class VacunacionController {
         this.vacunacionService = vacunacionService;
     }
 
-    // Devuelve todas las vacunaciones.
+    // Obtiene todas las vacunaciones del usuario
     @GetMapping
-    public List<Vacunacion> findAll() {
+    public List<Vacunacion> getAllVacunaciones() {
         return vacunacionService.findAll();
+    }
+
+    // Obtiene las vacunaciones de una mascota
+    @GetMapping("/mascota/{mascotaId}")
+    public ResponseEntity<List<Vacunacion>> getVacunacionesByMascota(
+            @PathVariable Long mascotaId) {
+
+        try {
+            return ResponseEntity.ok(
+                    vacunacionService.findByMascota(mascotaId)
+            );
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // Busca una vacunación por su ID.
     @GetMapping("/{id}")
-    public ResponseEntity<Vacunacion> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(vacunacionService.findById(id));
+    public ResponseEntity<Vacunacion> getVacunacionById(
+            @PathVariable Long id) {
+
+        try {
+            Vacunacion vacunacion =
+                    vacunacionService.findById(id);
+
+            return ResponseEntity.ok(vacunacion);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    // Guarda una vacunación.
-    @PostMapping
-    public ResponseEntity<Vacunacion> save(@RequestBody Vacunacion vacunacion) {
-        return ResponseEntity.ok(vacunacionService.save(vacunacion));
+    // Crea una vacunación asociada a una mascota.
+    @PostMapping("/mascota/{mascotaId}")
+    public ResponseEntity<Vacunacion> crearVacunacion(
+            @PathVariable Long mascotaId,
+            @RequestBody Vacunacion vacunacion) {
+
+        try {
+            return ResponseEntity.ok(
+                    vacunacionService.crear(mascotaId, vacunacion)
+            );
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     // Actualiza una vacunación.
     @PutMapping("/{id}")
-    public ResponseEntity<Vacunacion> update(
+    public ResponseEntity<Vacunacion> updateVacunacion(
             @PathVariable Long id,
             @RequestBody Vacunacion vacunacion) {
 
-        return ResponseEntity.ok(
-                vacunacionService.update(id, vacunacion)
-        );
+        try {
+            return ResponseEntity.ok(
+                    vacunacionService.update(id, vacunacion)
+            );
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // Elimina una vacunación.
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        vacunacionService.delete(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deleteVacunacion(
+            @PathVariable Long id) {
+
+        try {
+            vacunacionService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

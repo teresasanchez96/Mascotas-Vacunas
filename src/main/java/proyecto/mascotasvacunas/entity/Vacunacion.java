@@ -33,7 +33,6 @@ public class Vacunacion {
 
     @ManyToOne
     @JoinColumn(name = "vacuna_id", nullable = false)
-    @JsonIgnore
     private Vacuna vacuna;
 
     public Vacunacion() {
