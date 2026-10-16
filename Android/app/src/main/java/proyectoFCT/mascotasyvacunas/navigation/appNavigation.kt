@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import proyectoFCT.mascotasyvacunas.authentication.ui.screen.LoginScreen
+import proyectoFCT.mascotasyvacunas.authentication.ui.screen.PantallaRegistro
 import proyectoFCT.mascotasyvacunas.home.ui.screen.PantallaBienvenida
 
 // Gestiona la navegación entre las diferentes pantallas de la aplicación.
@@ -30,10 +31,10 @@ fun AppNavigation() {
             LoginScreen(navController)
         }
 
-       /* // Pantalla de registro de nuevos usuarios.
+       //  Pantalla de registro de nuevos usuarios.
         composable<Registro> {
             PantallaRegistro(navController)
-        }*/
+        }
     }
 
 }

@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import proyectoFCT.mascotasyvacunas.R
 import proyectoFCT.mascotasyvacunas.navigation.Login
+import proyectoFCT.mascotasyvacunas.navigation.Registro
 import proyectoFCT.mascotasyvacunas.ui.theme.Purple40
 
 @Composable
@@ -118,7 +119,7 @@ fun PantallaBienvenida(
         // Botón registrarse
         OutlinedButton(
             onClick = {
-                //navController.navigate(Registro)
+                navController.navigate(Registro)
             },
             modifier = Modifier
                 .fillMaxWidth()

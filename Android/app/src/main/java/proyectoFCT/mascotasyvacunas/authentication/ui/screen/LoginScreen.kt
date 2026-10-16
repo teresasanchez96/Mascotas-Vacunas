@@ -42,13 +42,16 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import proyectoFCT.mascotasyvacunas.authentication.ui.viewmodel.AuthenticationViewModel
+import proyectoFCT.mascotasyvacunas.navigation.Registro
 import proyectoFCT.mascotasyvacunas.ui.theme.Purple40
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-
+    viewModel: AuthenticationViewModel = hiltViewModel()
 ) {
 
     var email by remember {
@@ -208,6 +211,22 @@ fun LoginScreen(
             Button(
                 onClick = {
 
+                    if (email.isBlank() || password.isBlank()) {
+                        mensajeError = "Introduce tu email y contraseña."
+                        return@Button
+                    }
+
+                    viewModel.login(
+                        email = email,
+                        password = password,
+                        onSuccess = {
+
+                        },
+                        onError = {
+                            mensajeError =
+                                "No se ha podido iniciar sesión. Comprueba tu email y contraseña."
+                        }
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -240,7 +259,7 @@ fun LoginScreen(
 
                 TextButton(
                     onClick = {
-                        //navController.navigate(Registro)
+                        navController.navigate(Registro)
                     }
                 ) {
                     Text(
