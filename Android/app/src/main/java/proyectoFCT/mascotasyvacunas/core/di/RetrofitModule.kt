@@ -8,6 +8,7 @@ import okhttp3.OkHttpClient
 import proyectoFCT.mascotasyvacunas.authentication.data.local.TokenManager
 import proyectoFCT.mascotasyvacunas.authentication.data.remote.AuthenticationClient
 import proyectoFCT.mascotasyvacunas.authentication.data.remote.JwtInterceptor
+import proyectoFCT.mascotasyvacunas.core.network.MascotaClient
 import proyectoFCT.mascotasyvacunas.utils.Constantes
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -42,7 +43,6 @@ class RetrofitModule {
     }
 
 
-
     @Provides
     @Singleton
     fun provideAuthenticationClient(
@@ -50,6 +50,16 @@ class RetrofitModule {
     ): AuthenticationClient {
         return retrofit.create(
             AuthenticationClient::class.java
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMascotaClient(
+        retrofit: Retrofit
+    ): MascotaClient {
+        return retrofit.create(
+            MascotaClient::class.java
         )
     }
 }
