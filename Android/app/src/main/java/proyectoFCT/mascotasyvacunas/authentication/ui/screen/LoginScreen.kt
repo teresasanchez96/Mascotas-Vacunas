@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import proyectoFCT.mascotasyvacunas.authentication.ui.viewmodel.AuthenticationViewModel
+import proyectoFCT.mascotasyvacunas.navigation.ListaMascotas
 import proyectoFCT.mascotasyvacunas.navigation.Registro
 import proyectoFCT.mascotasyvacunas.ui.theme.Purple40
 
@@ -220,7 +221,11 @@ fun LoginScreen(
                         email = email,
                         password = password,
                         onSuccess = {
-
+                            navController.navigate(ListaMascotas) {
+                                popUpTo(proyectoFCT.mascotasyvacunas.navigation.Login) {
+                                    inclusive = true
+                                }
+                            }
                         },
                         onError = {
                             mensajeError =

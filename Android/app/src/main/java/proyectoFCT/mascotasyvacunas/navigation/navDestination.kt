@@ -10,3 +10,9 @@ object Login
 
 @Serializable
 object Registro
+
+@Serializable
+object ListaMascotas
+
+@Serializable
+object NuevaMascota

@@ -7,6 +7,8 @@ import androidx.navigation.compose.rememberNavController
 import proyectoFCT.mascotasyvacunas.authentication.ui.screen.LoginScreen
 import proyectoFCT.mascotasyvacunas.authentication.ui.screen.PantallaRegistro
 import proyectoFCT.mascotasyvacunas.home.ui.screen.PantallaBienvenida
+import proyectoFCT.mascotasyvacunas.mascotas.ui.screen.PantallaListaMascotas
+import proyectoFCT.mascotasyvacunas.mascotas.ui.screen.PantallaNuevaMascota
 
 // Gestiona la navegación entre las diferentes pantallas de la aplicación.
 @Composable
@@ -34,6 +36,16 @@ fun AppNavigation() {
        //  Pantalla de registro de nuevos usuarios.
         composable<Registro> {
             PantallaRegistro(navController)
+        }
+
+        // Pantalla lista de mascotas del usuario.
+        composable<ListaMascotas> {
+            PantallaListaMascotas(navController)
+        }
+
+        // Pantalla para añadir una mascota nueva.
+        composable<NuevaMascota> {
+            PantallaNuevaMascota(navController)
         }
     }
 
