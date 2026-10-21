@@ -1,8 +1,10 @@
 package proyectoFCT.mascotasyvacunas.mascotas.ui.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,6 +48,8 @@ import androidx.navigation.NavController
 import proyectoFCT.mascotasyvacunas.R
 import proyectoFCT.mascotasyvacunas.mascotas.ui.model.Mascota
 import proyectoFCT.mascotasyvacunas.mascotas.ui.viewmodel.MascotaViewModel
+import proyectoFCT.mascotasyvacunas.navigation.BarraNavegacion
+import proyectoFCT.mascotasyvacunas.navigation.ListaVacunas
 import proyectoFCT.mascotasyvacunas.navigation.NuevaMascota
 import proyectoFCT.mascotasyvacunas.ui.theme.Purple40
 import java.time.LocalDate
@@ -68,7 +73,20 @@ fun PantallaListaMascotas(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = Color(0xFFF0E9FA),
-
+        bottomBar = {
+            BarraNavegacion(
+                pantallaActual = "mascotas",
+                onMascotasClick = {
+                    // Ya estamos en mascotas
+                },
+                onVacunasClick = {
+                    navController.navigate(ListaVacunas)
+                },
+                onPerfilClick = {
+                    //navController.navigate(Perfil)
+                }
+            )
+        }
     ) { innerPadding ->
 
         Column(
@@ -134,7 +152,6 @@ fun PantallaListaMascotas(
 
     MyDialog(
         show = showDialog,
-        title = "Eliminar mascota",
         description = "¿Está seguro de que desea eliminar la mascota?",
         onDismiss = {
             mascotaViewModel.changeShowDialog()
@@ -311,7 +328,6 @@ private fun calcularEdad(fechaNacimiento: String): String {
 @Composable
 fun MyDialog(
     show: Boolean,
-    title: String,
     description: String,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
@@ -322,12 +338,40 @@ fun MyDialog(
         AlertDialog(
             onDismissRequest = onDismiss,
 
+            icon = {
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(
+                            color = Color(0xFFFCE7EB),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Eliminar mascota",
+                        tint = Color(0xFFC45C6C),
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+            },
+
             title = {
-                Text(text = title)
+                Text(
+                    text = "¿Eliminar mascota?",
+                    color = Purple40,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
             },
 
             text = {
-                Text(text = description)
+                Text(
+                    text = description,
+                    color = Color(0xFF5F5965),
+                    textAlign = TextAlign.Center
+                )
             },
 
             confirmButton = {
@@ -336,7 +380,8 @@ fun MyDialog(
                 ) {
                     Text(
                         text = "Eliminar",
-                        color = Purple40
+                        color = Color(0xFFC45C6C),
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             },
@@ -345,9 +390,16 @@ fun MyDialog(
                 TextButton(
                     onClick = onDismiss
                 ) {
-                    Text("Cancelar")
+                    Text(
+                        text = "Cancelar",
+                        color = Purple40,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
-            }
+            },
+
+            containerColor = Color(0xFFF8F3FF),
+            shape = RoundedCornerShape(24.dp)
         )
     }
 }

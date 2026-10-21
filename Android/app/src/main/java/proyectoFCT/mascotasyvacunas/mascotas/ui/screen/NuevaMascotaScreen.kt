@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -44,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -583,7 +586,9 @@ fun PantallaNuevaMascota(
                                 null
                             },
 
-
+                            vacunas =
+                            mascotaEditar?.vacunas
+                                ?: emptyList()
                         )
 
                         if (mascotaId == null) {
@@ -639,47 +644,58 @@ fun PantallaNuevaMascota(
         }
     }
 
-    // Diálogo de éxito
+    // Diálogo de éxito al registrar una mascota.
     if (showSuccessDialog) {
 
         AlertDialog(
-
             onDismissRequest = {
-
                 mascotaViewModel.hideSuccessDialog()
-
                 navController.popBackStack()
             },
 
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = "Registro correcto",
+                    tint = Color(0xFF4A9B69),
+                    modifier = Modifier.size(42.dp)
+                )
+            },
+
             title = {
-                Text("Información")
+                Text(
+                    text = "¡Mascota registrada!",
+                    color = Purple40,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
             },
 
             text = {
-
                 Text(
-                    if (mascotaId == null) {
-                        "Mascota registrada correctamente"
-                    } else {
-                        "Mascota actualizada correctamente"
-                    }
+                    text = "La mascota se ha añadido correctamente a tu lista.",
+                    color = Color(0xFF5F5965),
+                    textAlign = TextAlign.Center
                 )
             },
 
             confirmButton = {
-
                 TextButton(
                     onClick = {
-
                         mascotaViewModel.hideSuccessDialog()
-
                         navController.popBackStack()
                     }
                 ) {
-
-                    Text("Aceptar")
+                    Text(
+                        text = "Aceptar",
+                        color = Purple40,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
-            }
+            },
+
+            containerColor = Color(0xFFF8F3FF),
+            shape = RoundedCornerShape(24.dp)
         )
     }
 

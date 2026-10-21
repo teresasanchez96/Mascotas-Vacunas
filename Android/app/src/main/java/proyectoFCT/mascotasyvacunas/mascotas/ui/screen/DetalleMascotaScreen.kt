@@ -52,6 +52,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -582,38 +583,68 @@ private fun DialogoEliminarMascota(
         AlertDialog(
             onDismissRequest = onDismiss,
 
+            icon = {
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(
+                            color = Color(0xFFFCE7EB),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Eliminar mascota",
+                        tint = Color(0xFFC45C6C),
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+            },
+
             title = {
-                Text("Eliminar mascota")
+                Text(
+                    text = "¿Eliminar mascota?",
+                    color = Purple40,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
             },
 
             text = {
                 Text(
-                    "¿Está seguro de que desea eliminar esta mascota?"
+                    text = "¿Está seguro de que desea eliminar esta mascota? Esta acción no se puede deshacer.",
+                    color = Color(0xFF5F5965),
+                    textAlign = TextAlign.Center
                 )
             },
 
             confirmButton = {
-
                 TextButton(
                     onClick = onConfirm
                 ) {
-
                     Text(
-                        "Eliminar",
-                        color = Color(0xFFD96C78)
+                        text = "Eliminar",
+                        color = Color(0xFFC45C6C),
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             },
 
             dismissButton = {
-
                 TextButton(
                     onClick = onDismiss
                 ) {
-
-                    Text("Cancelar")
+                    Text(
+                        text = "Cancelar",
+                        color = Purple40,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
-            }
+            },
+
+            containerColor = Color(0xFFF8F3FF),
+            shape = RoundedCornerShape(24.dp)
         )
     }
 }

@@ -1,14 +1,29 @@
 package proyectoFCT.mascotasyvacunas.mascotas.ui.screen
 
 import android.app.DatePickerDialog
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -17,18 +32,23 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import proyectoFCT.mascotasyvacunas.mascotas.ui.model.Mascota
+import proyectoFCT.mascotasyvacunas.ui.theme.Purple40
 import java.util.Calendar
 import java.util.Locale
 
@@ -40,30 +60,28 @@ fun DialogoEditarMascota(
     onGuardar: (Mascota) -> Unit
 ) {
 
-    var nombre by remember {
+    var nombre by remember(mascota.id) {
         mutableStateOf(mascota.nombre)
     }
 
-    var especie by remember {
+    var especie by remember(mascota.id) {
         mutableStateOf(mascota.especie)
     }
 
-    var genero by remember {
+    var genero by remember(mascota.id) {
         mutableStateOf(mascota.genero)
     }
 
-    var raza by remember {
+    var raza by remember(mascota.id) {
         mutableStateOf(mascota.raza)
     }
 
-    var fechaNacimiento by remember {
+    var fechaNacimiento by remember(mascota.id) {
         mutableStateOf(mascota.fechaNacimiento)
     }
 
-    var observaciones by remember {
-        mutableStateOf(
-            mascota.observaciones ?: ""
-        )
+    var observaciones by remember(mascota.id) {
+        mutableStateOf(mascota.observaciones ?: "")
     }
 
     var especieExpandida by remember {
@@ -71,6 +89,10 @@ fun DialogoEditarMascota(
     }
 
     var generoExpandido by remember {
+        mutableStateOf(false)
+    }
+
+    var mostrarError by remember {
         mutableStateOf(false)
     }
 
@@ -91,342 +113,404 @@ fun DialogoEditarMascota(
     )
 
     val context = LocalContext.current
-
     val calendar = Calendar.getInstance()
 
-    AlertDialog(
+    val coloresCampos = OutlinedTextFieldDefaults.colors(
+        unfocusedContainerColor = Color.White,
+        focusedContainerColor = Color.White,
+        unfocusedBorderColor = Color(0xFFD6D0D9),
+        focusedBorderColor = Purple40,
+        focusedLabelColor = Purple40,
+        cursorColor = Purple40
+    )
 
-        onDismissRequest = onDismiss,
+    Dialog(
+        onDismissRequest = onDismiss
+    ) {
 
-        title = {
-            Text(
-                text = "Modificar datos",
-                color = Color(0xFF4A3A68)
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 720.dp),
+            shape = RoundedCornerShape(28.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFF8F3FF)
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 6.dp
             )
-        },
+        ) {
 
-        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(22.dp)
+            ) {
 
-            Column {
-
-                OutlinedTextField(
-                    value = nombre,
-
-                    onValueChange = {
-                        nombre = it
-                    },
-
-                    label = {
-                        Text("Nombre")
-                    },
-
+                // Cabecera del diálogo.
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-
-                    singleLine = true
-                )
-
-                Spacer(
-                    modifier = Modifier.height(8.dp)
-                )
-
-                ExposedDropdownMenuBox(
-                    expanded = especieExpandida,
-
-                    onExpandedChange = {
-                        especieExpandida =
-                            !especieExpandida
-                    }
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
 
-                    OutlinedTextField(
-                        value = especie,
-
-                        onValueChange = {},
-
-                        readOnly = true,
-
-                        label = {
-                            Text("Especie")
-                        },
-
-                        trailingIcon = {
-
-                            ExposedDropdownMenuDefaults
-                                .TrailingIcon(
-                                    expanded =
-                                    especieExpandida
-                                )
-                        },
-
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(
-                                type = MenuAnchorType.PrimaryNotEditable,
-                                enabled = true
-                            )
-                    )
-
-                    ExposedDropdownMenu(
-                        expanded = especieExpandida,
-
-                        onDismissRequest = {
-                            especieExpandida = false
-                        }
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        especies.forEach { opcion ->
-
-                            DropdownMenuItem(
-                                text = {
-                                    Text(opcion)
-                                },
-
-                                onClick = {
-
-                                    especie = opcion
-
-                                    especieExpandida = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(
-                    modifier = Modifier.height(8.dp)
-                )
-
-                ExposedDropdownMenuBox(
-                    expanded = generoExpandido,
-
-                    onExpandedChange = {
-                        generoExpandido =
-                            !generoExpandido
-                    }
-                ) {
-
-                    OutlinedTextField(
-                        value = genero,
-
-                        onValueChange = {},
-
-                        readOnly = true,
-
-                        label = {
-                            Text("Género")
-                        },
-
-                        trailingIcon = {
-
-                            ExposedDropdownMenuDefaults
-                                .TrailingIcon(
-                                    expanded =
-                                    generoExpandido
-                                )
-                        },
-
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(
-                                type = MenuAnchorType.PrimaryNotEditable,
-                                enabled = true
-                            )
-                    )
-
-                    ExposedDropdownMenu(
-                        expanded = generoExpandido,
-
-                        onDismissRequest = {
-                            generoExpandido = false
-                        }
-                    ) {
-
-                        generos.forEach { opcion ->
-
-                            DropdownMenuItem(
-                                text = {
-                                    Text(opcion)
-                                },
-
-                                onClick = {
-
-                                    genero = opcion
-
-                                    generoExpandido = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(
-                    modifier = Modifier.height(8.dp)
-                )
-
-                OutlinedTextField(
-                    value = raza,
-
-                    onValueChange = {
-                        raza = it
-                    },
-
-                    label = {
-                        Text("Raza (opcional)")
-                    },
-
-                    modifier = Modifier.fillMaxWidth(),
-
-                    singleLine = true
-                )
-
-                Spacer(
-                    modifier = Modifier.height(8.dp)
-                )
-
-                OutlinedTextField(
-                    value = fechaNacimiento,
-
-                    onValueChange = {},
-
-                    readOnly = true,
-
-                    label = {
-                        Text("Fecha de nacimiento")
-                    },
-
-                    trailingIcon = {
-
-                        IconButton(
-                            onClick = {
-
-                                val datePicker =
-                                    DatePickerDialog(
-
-                                        context,
-
-                                        { _, year,
-                                          month,
-                                          dayOfMonth ->
-
-                                            fechaNacimiento =
-                                                String.format(
-                                                    Locale.getDefault(),
-                                                    "%02d/%02d/%04d",
-                                                    dayOfMonth,
-                                                    month + 1,
-                                                    year
-                                                )
-                                        },
-
-                                        calendar.get(
-                                            Calendar.YEAR
-                                        ),
-
-                                        calendar.get(
-                                            Calendar.MONTH
-                                        ),
-
-                                        calendar.get(
-                                            Calendar.DAY_OF_MONTH
-                                        )
-                                    )
-
-                                datePicker.datePicker.maxDate =
-                                    System.currentTimeMillis()
-
-                                datePicker.show()
-                            }
+                        Box(
+                            modifier = Modifier
+                                .size(46.dp)
+                                .background(
+                                    color = Color(0xFFE8DDF8),
+                                    shape = CircleShape
+                                ),
+                            contentAlignment = Alignment.Center
                         ) {
 
                             Icon(
-                                imageVector =
-                                Icons.Default.DateRange,
-
-                                contentDescription =
-                                "Seleccionar fecha"
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = null,
+                                tint = Purple40,
+                                modifier = Modifier.size(24.dp)
                             )
                         }
-                    },
 
-                    modifier = Modifier.fillMaxWidth()
-                )
+                        Column(
+                            modifier = Modifier.padding(start = 12.dp)
+                        ) {
+
+                            Text(
+                                text = "Editar mascota",
+                                color = Purple40,
+                                fontSize = 21.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Text(
+                                text = "Modifica sus datos",
+                                color = Color(0xFF6F6680),
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
+
+                }
 
                 Spacer(
-                    modifier = Modifier.height(8.dp)
+                    modifier = Modifier.height(20.dp)
                 )
 
-                OutlinedTextField(
-                    value = observaciones,
+                // Campos del formulario.
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 430.dp)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
 
-                    onValueChange = {
-                        observaciones = it
-                    },
+                    // Nombre.
+                    OutlinedTextField(
+                        value = nombre,
+                        onValueChange = {
+                            nombre = it
+                            mostrarError = false
+                        },
+                        label = {
+                            Text("Nombre")
+                        },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = coloresCampos
+                    )
 
-                    label = {
-                        Text("Observaciones")
-                    },
-
-                    modifier = Modifier.fillMaxWidth(),
-
-                    minLines = 2,
-
-                    maxLines = 3
-                )
-            }
-        },
-
-        confirmButton = {
-
-            Button(
-                onClick = {
-
-                    if (
-                        nombre.isNotBlank() &&
-                        especie.isNotBlank() &&
-                        genero.isNotBlank() &&
-                        fechaNacimiento.isNotBlank()
+                    // Especie.
+                    ExposedDropdownMenuBox(
+                        expanded = especieExpandida,
+                        onExpandedChange = {
+                            especieExpandida = !especieExpandida
+                        }
                     ) {
 
-                        onGuardar(
+                        OutlinedTextField(
+                            value = especie,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = {
+                                Text("Especie")
+                            },
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(
+                                    expanded = especieExpandida
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(
+                                    type = MenuAnchorType.PrimaryNotEditable,
+                                    enabled = true
+                                ),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = coloresCampos
+                        )
 
-                            Mascota(
-                                id = mascota.id,
+                        ExposedDropdownMenu(
+                            expanded = especieExpandida,
+                            onDismissRequest = {
+                                especieExpandida = false
+                            }
+                        ) {
 
-                                nombre = nombre,
+                            especies.forEach { opcion ->
 
-                                especie = especie,
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(opcion)
+                                    },
+                                    onClick = {
+                                        especie = opcion
+                                        especieExpandida = false
+                                    }
+                                )
+                            }
+                        }
+                    }
 
-                                genero = genero,
+                    // Género.
+                    ExposedDropdownMenuBox(
+                        expanded = generoExpandido,
+                        onExpandedChange = {
+                            generoExpandido = !generoExpandido
+                        }
+                    ) {
 
-                                raza = raza,
+                        OutlinedTextField(
+                            value = genero,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = {
+                                Text("Género")
+                            },
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(
+                                    expanded = generoExpandido
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(
+                                    type = MenuAnchorType.PrimaryNotEditable,
+                                    enabled = true
+                                ),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = coloresCampos
+                        )
 
-                                fechaNacimiento =
-                                fechaNacimiento,
+                        ExposedDropdownMenu(
+                            expanded = generoExpandido,
+                            onDismissRequest = {
+                                generoExpandido = false
+                            }
+                        ) {
 
-                                observaciones =
-                                observaciones.ifBlank {
-                                    null
-                                },
+                            generos.forEach { opcion ->
 
-                               // vacunas = mascota.vacunas
-                            )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(opcion)
+                                    },
+                                    onClick = {
+                                        genero = opcion
+                                        generoExpandido = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    // Raza.
+                    OutlinedTextField(
+                        value = raza,
+                        onValueChange = {
+                            raza = it
+                        },
+                        label = {
+                            Text("Raza (opcional)")
+                        },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = coloresCampos
+                    )
+
+                    // Fecha de nacimiento.
+                    OutlinedTextField(
+                        value = fechaNacimiento,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = {
+                            Text("Fecha de nacimiento")
+                        },
+                        placeholder = {
+                            Text("dd/MM/aaaa")
+                        },
+                        trailingIcon = {
+
+                            IconButton(
+                                onClick = {
+
+                                    val datePicker = DatePickerDialog(
+                                        context,
+                                        { _, year, month, dayOfMonth ->
+
+                                            fechaNacimiento = String.format(
+                                                Locale.getDefault(),
+                                                "%02d/%02d/%04d",
+                                                dayOfMonth,
+                                                month + 1,
+                                                year
+                                            )
+
+                                            mostrarError = false
+                                        },
+                                        calendar.get(Calendar.YEAR),
+                                        calendar.get(Calendar.MONTH),
+                                        calendar.get(Calendar.DAY_OF_MONTH)
+                                    )
+
+                                    datePicker.datePicker.maxDate =
+                                        System.currentTimeMillis()
+
+                                    datePicker.show()
+                                }
+                            ) {
+
+                                Icon(
+                                    imageVector = Icons.Default.DateRange,
+                                    contentDescription = "Seleccionar fecha",
+                                    tint = Purple40
+                                )
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = coloresCampos
+                    )
+
+                    // Observaciones.
+                    OutlinedTextField(
+                        value = observaciones,
+                        onValueChange = {
+                            observaciones = it
+                        },
+                        label = {
+                            Text("Observaciones (opcional)")
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 2,
+                        maxLines = 3,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = coloresCampos
+                    )
+
+                    // Mensaje de validación.
+                    if (mostrarError) {
+
+                        Text(
+                            text = "Completa el nombre, la especie, el género y la fecha de nacimiento.",
+                            color = Color(0xFFC45C6C),
+                            fontSize = 13.sp
                         )
                     }
                 }
-            ) {
 
-                Text("Guardar")
-            }
-        },
+                Spacer(
+                    modifier = Modifier.height(20.dp)
+                )
 
-        dismissButton = {
+                // Botones.
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
 
-            TextButton(
-                onClick = onDismiss
-            ) {
+                    // Botón cancelar.
+                    Button(
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        contentPadding = PaddingValues(
+                            horizontal = 6.dp,
+                            vertical = 0.dp
+                        ),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFEDE1FF),
+                            contentColor = Purple40
+                        )
+                    ) {
+                        Text(
+                            text = "Cancelar",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1
+                        )
+                    }
 
-                Text("Cancelar")
+                    // Botón guardar.
+                    Button(
+                        onClick = {
+                            if (
+                                nombre.isNotBlank() &&
+                                especie.isNotBlank() &&
+                                genero.isNotBlank() &&
+                                fechaNacimiento.isNotBlank()
+                            ) {
+                                onGuardar(
+                                    Mascota(
+                                        id = mascota.id,
+                                        nombre = nombre.trim(),
+                                        especie = especie,
+                                        genero = genero,
+                                        raza = raza.trim(),
+                                        fechaNacimiento = fechaNacimiento,
+                                        observaciones = observaciones.ifBlank {
+                                            null
+                                        },
+                                        vacunas = mascota.vacunas
+                                    )
+                                )
+                            } else {
+                                mostrarError = true
+                            }
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        contentPadding = PaddingValues(
+                            horizontal = 6.dp,
+                            vertical = 0.dp
+                        ),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Purple40,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "Guardar cambios",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1,
+                            softWrap = false
+                        )
+                    }
+                }
             }
         }
-    )
+    }
 }
