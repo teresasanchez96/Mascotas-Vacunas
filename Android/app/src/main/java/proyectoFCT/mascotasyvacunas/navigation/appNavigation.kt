@@ -12,6 +12,7 @@ import proyectoFCT.mascotasyvacunas.home.ui.screen.PantallaBienvenida
 import proyectoFCT.mascotasyvacunas.mascotas.ui.screen.PantallaDetalleMascota
 import proyectoFCT.mascotasyvacunas.mascotas.ui.screen.PantallaListaMascotas
 import proyectoFCT.mascotasyvacunas.mascotas.ui.screen.PantallaNuevaMascota
+import proyectoFCT.mascotasyvacunas.vacunas.ui.screen.PantallaListaVacunas
 
 // Gestiona la navegación entre las diferentes pantallas de la aplicación.
 @Composable
@@ -72,6 +73,11 @@ fun AppNavigation() {
                     mascotaId = mascotaId
                 )
             }
+        }
+
+        // Lista de vacunas disponibles.
+        composable<ListaVacunas> {
+            PantallaListaVacunas(navController)
         }
     }
 

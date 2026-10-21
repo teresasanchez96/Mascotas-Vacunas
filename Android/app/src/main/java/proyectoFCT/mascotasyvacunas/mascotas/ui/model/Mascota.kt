@@ -1,6 +1,7 @@
 package proyectoFCT.mascotasyvacunas.mascotas.ui.model
 
 import proyectoFCT.mascotasyvacunas.core.network.MascotaResponse
+import proyectoFCT.mascotasyvacunas.vacunas.ui.model.Vacuna
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -12,6 +13,7 @@ data class Mascota(
     val raza: String,
     val fechaNacimiento: String,
     val observaciones: String?,
+    val vacunas: List<Vacuna>
 ){
     fun toMascotaResponse(): MascotaResponse {
         return MascotaResponse(
@@ -22,7 +24,7 @@ data class Mascota(
             raza = raza,
             fechaNacimiento = formatDate(fechaNacimiento),
             observaciones = observaciones,
-
+            vacunas = vacunas.map { it.toVacunaResponse() }
         )
     }
 

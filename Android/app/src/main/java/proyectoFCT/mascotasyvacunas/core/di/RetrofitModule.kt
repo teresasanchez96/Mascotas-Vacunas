@@ -10,6 +10,7 @@ import proyectoFCT.mascotasyvacunas.authentication.data.remote.AuthenticationCli
 import proyectoFCT.mascotasyvacunas.authentication.data.remote.JwtInterceptor
 import proyectoFCT.mascotasyvacunas.core.network.MascotaClient
 import proyectoFCT.mascotasyvacunas.utils.Constantes
+import proyectoFCT.mascotasyvacunas.vacunas.data.network.VacunaClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -60,6 +61,16 @@ class RetrofitModule {
     ): MascotaClient {
         return retrofit.create(
             MascotaClient::class.java
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideVacunaClient(
+        retrofit: Retrofit
+    ): VacunaClient {
+        return retrofit.create(
+            VacunaClient::class.java
         )
     }
 }

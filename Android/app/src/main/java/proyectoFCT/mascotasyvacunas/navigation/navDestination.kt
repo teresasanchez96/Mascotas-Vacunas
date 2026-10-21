@@ -16,3 +16,6 @@ object ListaMascotas
 
 @Serializable
 object NuevaMascota
+
+@Serializable
+object ListaVacunas
