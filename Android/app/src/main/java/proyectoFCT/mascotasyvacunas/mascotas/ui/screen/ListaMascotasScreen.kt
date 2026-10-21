@@ -1,6 +1,7 @@
 package proyectoFCT.mascotasyvacunas.mascotas.ui.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -167,7 +168,14 @@ fun MascotaItem(
 
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable {
+                mascota.id?.let { id ->
+                    navController.navigate(
+                        "detalle_mascota/$id"
+                    )
+                }
+            },
         shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
@@ -175,7 +183,7 @@ fun MascotaItem(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
         )
-    ) {
+    )  {
 
         Row(
             modifier = Modifier
