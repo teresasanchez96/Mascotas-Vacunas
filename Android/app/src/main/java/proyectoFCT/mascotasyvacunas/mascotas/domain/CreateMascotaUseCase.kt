@@ -1,7 +1,7 @@
 package proyectoFCT.mascotasyvacunas.mascotas.domain
 
-import proyectoFCT.mascotasyvacunas.core.network.MascotaRepository
-import proyectoFCT.mascotasyvacunas.core.network.MascotaResponse
+import proyectoFCT.mascotasyvacunas.mascotas.data.network.MascotaRepository
+import proyectoFCT.mascotasyvacunas.mascotas.data.network.MascotaResponse
 import proyectoFCT.mascotasyvacunas.mascotas.ui.model.Mascota
 import javax.inject.Inject
 

@@ -1,6 +1,6 @@
 package proyectoFCT.mascotasyvacunas.mascotas.domain
 
-import proyectoFCT.mascotasyvacunas.core.network.MascotaRepository
+import proyectoFCT.mascotasyvacunas.mascotas.data.network.MascotaRepository
 import javax.inject.Inject
 
 class DeleteMascotaUseCase @Inject constructor(

@@ -1,4 +1,4 @@
-package proyectoFCT.mascotasyvacunas.core.network
+package proyectoFCT.mascotasyvacunas.mascotas.data.network
 
 import proyectoFCT.mascotasyvacunas.mascotas.ui.model.Mascota
 import retrofit2.Response

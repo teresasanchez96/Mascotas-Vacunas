@@ -1,6 +1,6 @@
 package proyectoFCT.mascotasyvacunas.mascotas.ui.model
 
-import proyectoFCT.mascotasyvacunas.core.network.MascotaResponse
+import proyectoFCT.mascotasyvacunas.mascotas.data.network.MascotaResponse
 import proyectoFCT.mascotasyvacunas.vacunas.ui.model.Vacuna
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
