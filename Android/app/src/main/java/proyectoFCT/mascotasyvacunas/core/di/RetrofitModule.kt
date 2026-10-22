@@ -8,8 +8,9 @@ import okhttp3.OkHttpClient
 import proyectoFCT.mascotasyvacunas.authentication.data.local.TokenManager
 import proyectoFCT.mascotasyvacunas.authentication.data.remote.AuthenticationClient
 import proyectoFCT.mascotasyvacunas.authentication.data.remote.JwtInterceptor
-import proyectoFCT.mascotasyvacunas.core.network.MascotaClient
+import proyectoFCT.mascotasyvacunas.mascotas.data.network.MascotaClient
 import proyectoFCT.mascotasyvacunas.utils.Constantes
+import proyectoFCT.mascotasyvacunas.vacunaciones.data.network.VacunacionClient
 import proyectoFCT.mascotasyvacunas.vacunas.data.network.VacunaClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -72,5 +73,14 @@ class RetrofitModule {
         return retrofit.create(
             VacunaClient::class.java
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideVacunacionClient(
+        retrofit: Retrofit
+    ): VacunacionClient {
+        return retrofit.create(
+            VacunacionClient::class.java)
     }
 }
