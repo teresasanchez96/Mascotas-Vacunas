@@ -51,6 +51,7 @@ import proyectoFCT.mascotasyvacunas.mascotas.ui.viewmodel.MascotaViewModel
 import proyectoFCT.mascotasyvacunas.navigation.BarraNavegacion
 import proyectoFCT.mascotasyvacunas.navigation.ListaVacunas
 import proyectoFCT.mascotasyvacunas.navigation.NuevaMascota
+import proyectoFCT.mascotasyvacunas.navigation.Perfil
 import proyectoFCT.mascotasyvacunas.ui.theme.Purple40
 import java.time.LocalDate
 import java.time.Period
@@ -83,7 +84,7 @@ fun PantallaListaMascotas(
                     navController.navigate(ListaVacunas)
                 },
                 onPerfilClick = {
-                    //navController.navigate(Perfil)
+                    navController.navigate(Perfil)
                 }
             )
         }

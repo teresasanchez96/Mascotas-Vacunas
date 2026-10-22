@@ -57,6 +57,7 @@ import androidx.navigation.NavController
 import proyectoFCT.mascotasyvacunas.R
 import proyectoFCT.mascotasyvacunas.navigation.BarraNavegacion
 import proyectoFCT.mascotasyvacunas.navigation.ListaMascotas
+import proyectoFCT.mascotasyvacunas.navigation.Perfil
 import proyectoFCT.mascotasyvacunas.ui.theme.Purple40
 import proyectoFCT.mascotasyvacunas.vacunas.ui.model.Vacuna
 import proyectoFCT.mascotasyvacunas.vacunas.ui.viewmodel.VacunaViewModel
@@ -97,7 +98,7 @@ fun PantallaListaVacunas(
                 },
 
                 onPerfilClick = {
-                    // La navegación al perfil se añadirá más adelante.
+                    navController.navigate(Perfil)
                 }
             )
         }
