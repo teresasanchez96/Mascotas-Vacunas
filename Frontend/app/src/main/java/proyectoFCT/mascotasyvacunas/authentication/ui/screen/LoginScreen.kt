@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -229,7 +230,7 @@ fun LoginScreen(
                         },
                         onError = {
                             mensajeError =
-                                "No se ha podido iniciar sesión. Comprueba tu email y contraseña."
+                                "No se ha podido iniciar sesión. Comprueba que tu email y contraseña son correctos."
                         }
                     )
                 },
@@ -284,11 +285,42 @@ fun LoginScreen(
             onDismissRequest = {
                 mensajeError = null
             },
+            icon = null,
             title = {
-                Text("Error")
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                color = Color(0xFFE8DDF8),
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.WarningAmber,
+                            contentDescription = null,
+                            tint = Purple40,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    Text(
+                        text = "Error",
+                        color = Purple40,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             },
             text = {
-                Text(mensajeError ?: "")
+                Text(
+                    text = mensajeError ?: "",
+                    color = Color(0xFF625D68),
+                    modifier = Modifier.padding(top = 0.dp)
+                )
             },
             confirmButton = {
                 TextButton(
@@ -296,9 +328,16 @@ fun LoginScreen(
                         mensajeError = null
                     }
                 ) {
-                    Text("Aceptar")
+                    Text(
+                        text = "Aceptar",
+                        color = Purple40,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
-            }
+            },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = Color(0xFFF9F6FF),
+            tonalElevation = 6.dp
         )
     }
 }

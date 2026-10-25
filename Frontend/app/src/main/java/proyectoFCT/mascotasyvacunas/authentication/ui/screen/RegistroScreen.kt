@@ -2,7 +2,10 @@ package proyectoFCT.mascotasyvacunas.authentication.ui.screen
 
 import android.util.Patterns
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,14 +13,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -376,50 +382,124 @@ fun PantallaRegistro(
             onDismissRequest = {
                 mostrarRegistroExitoso = false
             },
+            icon = null,
             title = {
-                Text("Cuenta creada")
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                color = Color(0xFFE2F0E4),
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = Color(0xFF2E7D32),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    Text(
+                        text = "Cuenta creada",
+                        color = Purple40,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             },
             text = {
-                Text("Tu cuenta se ha creado correctamente.")
+                Text(
+                    text = "Tu cuenta se ha creado correctamente.",
+                    color = Color(0xFF625D68)
+                )
             },
             confirmButton = {
                 TextButton(
                     onClick = {
                         mostrarRegistroExitoso = false
                         navController.navigate(Login)
-                    }
+                    },
+                    contentPadding = PaddingValues(
+                        horizontal = 12.dp,
+                        vertical = 0.dp
+                    )
                 ) {
                     Text(
                         text = "Iniciar sesión",
                         color = Purple40,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
-            }
+            },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = Color(0xFFF9F6FF),
+            tonalElevation = 6.dp
         )
     }
 
     // Diálogo de error
     if (mensajeError != null) {
         AlertDialog(
-            onDismissRequest = {
-                mensajeError = null
-            },
+            onDismissRequest = { mensajeError = null },
+            icon = null,
             title = {
-                Text("Error")
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                color = Color(0xFFE8DDF8),
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.WarningAmber,
+                            contentDescription = null,
+                            tint = Purple40,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    Text(
+                        text = "Error",
+                        color = Purple40,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             },
             text = {
-                Text(mensajeError ?: "")
+                Text(
+                    text = mensajeError ?: "",
+                    color = Color(0xFF625D68)
+                )
             },
             confirmButton = {
                 TextButton(
-                    onClick = {
-                        mensajeError = null
-                    }
+                    onClick = { mensajeError = null },
+                    contentPadding = PaddingValues(
+                        horizontal = 12.dp,
+                        vertical = 0.dp
+                    )
                 ) {
-                    Text("Aceptar")
+                    Text(
+                        text = "Aceptar",
+                        color = Purple40,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
-            }
+            },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = Color(0xFFF9F6FF),
+            tonalElevation = 6.dp
         )
     }
 }
