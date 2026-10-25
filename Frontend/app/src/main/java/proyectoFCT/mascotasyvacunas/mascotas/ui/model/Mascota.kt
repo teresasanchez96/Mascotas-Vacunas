@@ -13,8 +13,9 @@ data class Mascota(
     val raza: String,
     val fechaNacimiento: String,
     val observaciones: String?,
+    val fotoMascota: String? = null,
     val vacunas: List<Vacuna>
-){
+) {
     fun toMascotaResponse(): MascotaResponse {
         return MascotaResponse(
             id = id,
@@ -24,6 +25,7 @@ data class Mascota(
             raza = raza,
             fechaNacimiento = formatDate(fechaNacimiento),
             observaciones = observaciones,
+            fotoMascota = fotoMascota,
             vacunas = vacunas.map { it.toVacunaResponse() }
         )
     }

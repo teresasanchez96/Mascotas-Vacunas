@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Cake
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
@@ -32,6 +33,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -40,7 +42,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,17 +50,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import proyectoFCT.mascotasyvacunas.R
 import proyectoFCT.mascotasyvacunas.mascotas.ui.viewmodel.MascotaViewModel
@@ -74,7 +76,15 @@ fun PantallaDetalleMascota(
     mascotaViewModel: MascotaViewModel = hiltViewModel()
 ) {
 
+    val context = LocalContext.current
+
     val mascotas by mascotaViewModel.mascotas.collectAsState()
+    val fotosMascotas by mascotaViewModel.fotosMascotas.collectAsState()
+    val fotosMascotasCargadas by mascotaViewModel.fotosMascotasCargadas.collectAsState()
+
+    LaunchedEffect(mascotaId) {
+        mascotaViewModel.cargarFotoMascota(mascotaId)
+    }
 
     val showDialog by mascotaViewModel.showDialog.collectAsState()
 
@@ -90,26 +100,6 @@ fun PantallaDetalleMascota(
         mutableStateOf(false)
     }
 
-    /*
-     * Actualiza los datos cuando volvemos a esta pantalla.
-     */
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    DisposableEffect(lifecycleOwner) {
-
-        val observer = LifecycleEventObserver { _, event ->
-
-            if (event == Lifecycle.Event.ON_RESUME) {
-                mascotaViewModel.cargarMascotas()
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -144,14 +134,6 @@ fun PantallaDetalleMascota(
                 "gato" -> R.drawable.gato
 
                 "conejo" -> R.drawable.conejo
-
-                "pájaro",
-                "pajaro" -> R.drawable.pajaro
-
-                "hámster",
-                "hamster" -> R.drawable.hamster
-
-                "tortuga" -> R.drawable.tortuga
 
                 "hurón",
                 "huron" -> R.drawable.huron
@@ -287,7 +269,6 @@ fun PantallaDetalleMascota(
                     modifier = Modifier.size(155.dp),
                     contentAlignment = Alignment.Center
                 ) {
-
                     // Círculo lila de fondo.
                     Box(
                         modifier = Modifier
@@ -298,15 +279,39 @@ fun PantallaDetalleMascota(
                             )
                     )
 
-                    // Imagen de la mascota.
-                    Image(
-                        painter = painterResource(
-                            id = imagenMascota
-                        ),
-                        contentDescription = mascota.nombre,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.size(125.dp)
-                    )
+                    // Fotografía real, indicador de carga o ilustración.
+                    val fotoMascota = fotosMascotas[mascotaId]
+                    val fotoCargada = mascotaId in fotosMascotasCargadas
+
+                    when {
+                        fotoMascota != null -> {
+                            Image(
+                                bitmap = fotoMascota.asImageBitmap(),
+                                contentDescription = "Fotografía de ${mascota.nombre}",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(145.dp)
+                                    .clip(CircleShape)
+                            )
+                        }
+
+                        !fotoCargada -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(40.dp),
+                                color = Purple40
+                            )
+                        }
+
+                        else -> {
+                            Image(
+                                painter = painterResource(id = imagenMascota),
+                                contentDescription = mascota.nombre,
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier.size(125.dp)
+                            )
+                        }
+                    }
+
                 }
 
                 Spacer(
@@ -344,12 +349,24 @@ fun PantallaDetalleMascota(
 
                 // Edad.
                 if (edad.isNotEmpty()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Cake,
+                            contentDescription = "Edad",
+                            tint = Color(0xFF5F5965),
+                            modifier = Modifier.size(20.dp)
+                        )
 
-                    Text(
-                        text = edad,
-                        color = Color(0xFF5F5965),
-                        fontSize = 17.sp
-                    )
+                        Spacer(modifier = Modifier.width(6.dp))
+
+                        Text(
+                            text = edad,
+                            color = Color(0xFF5F5965),
+                            fontSize = 17.sp
+                        )
+                    }
                 }
 
                 Spacer(
@@ -484,21 +501,23 @@ fun PantallaDetalleMascota(
     }
 
     // Diálogo para editar la mascota.
-    if (
-        mostrarDialogoEditar &&
-        mascota != null
-    ) {
-
+    if (mostrarDialogoEditar && mascota != null) {
         DialogoEditarMascota(
             mascota = mascota,
             onDismiss = {
                 mostrarDialogoEditar = false
             },
-            onGuardar = { mascotaEditada ->
-
+            onGuardar = { mascotaEditada, fotoUri ->
                 mascotaViewModel.updateMascota(
                     id = mascotaId,
-                    mascota = mascotaEditada
+                    mascota = mascotaEditada,
+                    context = context,
+                    fotoUri = fotoUri,
+                    onFotoActualizada = {
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("foto_actualizada_id", mascotaId)
+                    }
                 )
 
                 mostrarDialogoEditar = false

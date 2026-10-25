@@ -1,8 +1,14 @@
 package proyectoFCT.mascotasyvacunas.mascotas.ui.screen
 
 import android.app.DatePickerDialog
+import android.graphics.BitmapFactory
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -35,11 +42,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -57,7 +67,7 @@ import java.util.Locale
 fun DialogoEditarMascota(
     mascota: Mascota,
     onDismiss: () -> Unit,
-    onGuardar: (Mascota) -> Unit
+    onGuardar: (Mascota, Uri?) -> Unit
 ) {
 
     var nombre by remember(mascota.id) {
@@ -100,9 +110,6 @@ fun DialogoEditarMascota(
         "Perro",
         "Gato",
         "Conejo",
-        "Hámster",
-        "Tortuga",
-        "Pájaro",
         "Hurón",
         "Otra"
     )
@@ -113,6 +120,26 @@ fun DialogoEditarMascota(
     )
 
     val context = LocalContext.current
+    var fotoSeleccionada by remember(mascota.id) { mutableStateOf<Uri?>(null) }
+
+    val selectorFoto = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        fotoSeleccionada = uri
+    }
+
+    val bitmapSeleccionado = remember(fotoSeleccionada) {
+        fotoSeleccionada?.let { uri ->
+            try {
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    BitmapFactory.decodeStream(input)
+                }
+            } catch (_: Exception) {
+                null
+            }
+        }
+    }
+
     val calendar = Calendar.getInstance()
 
     val coloresCampos = OutlinedTextFieldDefaults.colors(
@@ -210,6 +237,56 @@ fun DialogoEditarMascota(
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+
+                    // Fotografía de la mascota.
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (bitmapSeleccionado != null) {
+                            Image(
+                                bitmap = bitmapSeleccionado.asImageBitmap(),
+                                contentDescription = "Nueva fotografía de ${mascota.nombre}",
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .size(120.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                            )
+                        } else {
+                            Text(
+                                text = "Puedes cambiar la fotografía de esta mascota",
+                                color = Color(0xFF6F6680),
+                                fontSize = 13.sp
+                            )
+                        }
+
+                        Button(
+                            onClick = { selectorFoto.launch("image/*") },
+                            shape = RoundedCornerShape(20.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFEDE1FF),
+                                contentColor = Purple40
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AddAPhoto,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (fotoSeleccionada == null) {
+                                    "Cambiar fotografía"
+                                } else {
+                                    "Elegir otra fotografía"
+                                },
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
 
                     // Nombre.
                     OutlinedTextField(
@@ -482,7 +559,8 @@ fun DialogoEditarMascota(
                                             null
                                         },
                                         vacunas = mascota.vacunas
-                                    )
+                                    ),
+                                    fotoSeleccionada
                                 )
                             } else {
                                 mostrarError = true

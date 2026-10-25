@@ -48,7 +48,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -81,6 +83,9 @@ fun PantallaVacunacionesMascota(
     val vacunaciones by vacunacionViewModel.vacunaciones.collectAsState()
     val vacunas by vacunaViewModel.vacunas.collectAsState()
     val mascotas by mascotaViewModel.mascotas.collectAsState()
+    val fotosMascotas by mascotaViewModel.fotosMascotas.collectAsState()
+
+    val fotosMascotasCargadas by mascotaViewModel.fotosMascotasCargadas.collectAsState()
 
     val mascota = mascotas.find {
         it.id == mascotaId
@@ -178,11 +183,6 @@ fun PantallaVacunacionesMascota(
                     "perro" -> R.drawable.perro
                     "gato" -> R.drawable.gato
                     "conejo" -> R.drawable.conejo
-                    "pájaro",
-                    "pajaro" -> R.drawable.pajaro
-                    "hámster",
-                    "hamster" -> R.drawable.hamster
-                    "tortuga" -> R.drawable.tortuga
                     "hurón",
                     "huron" -> R.drawable.huron
                     else -> R.drawable.otramascota
@@ -191,6 +191,11 @@ fun PantallaVacunacionesMascota(
                 val edad = calcularEdad(
                     mascota.fechaNacimiento
                 )
+
+                // Obtener la fotografía real de la mascota, si existe.
+                val fotoMascota = mascota.id?.let { id ->
+                    fotosMascotas[id]
+                }
 
                 // Foto y datos de la mascota en horizontal.
                 Row(
@@ -214,15 +219,28 @@ fun PantallaVacunacionesMascota(
                                 )
                         )
 
-                        Image(
-                            painter = painterResource(
-                                id = imagenMascota
-                            ),
-                            contentDescription = mascota.nombre,
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier.size(80.dp)
-                        )
+                        // Mostrar la foto real; si no existe, mostrar el dibujo.
+
+                        if (fotoMascota != null) {
+                            Image(
+                                bitmap = fotoMascota.asImageBitmap(),
+                                contentDescription = "Foto de ${mascota.nombre}",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(94.dp)
+                                    .clip(CircleShape)
+                            )
+                        } else if (mascotaId in fotosMascotasCargadas) {
+                            Image(
+                                painter = painterResource(id = imagenMascota),
+                                contentDescription = mascota.nombre,
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier.size(80.dp)
+                            )
+                        }
+
                     }
+
 
                     Spacer(
                         modifier = Modifier.width(18.dp)

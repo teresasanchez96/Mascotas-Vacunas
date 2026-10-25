@@ -13,8 +13,9 @@ data class MascotaResponse(
     val raza: String,
     val fechaNacimiento: String,
     val observaciones: String?,
-    val vacunas: List<VacunaResponse>? = emptyList()
-){
+    val vacunas: List<VacunaResponse>? = emptyList(),
+    val fotoMascota: String? = null
+) {
     fun toModel(): Mascota {
         return Mascota(
             id = id,
@@ -24,7 +25,8 @@ data class MascotaResponse(
             raza = raza,
             fechaNacimiento = formatDate(fechaNacimiento),
             observaciones = observaciones,
-            vacunas = vacunas?.map { it.toModel() } ?: emptyList()
+            vacunas = vacunas?.map { it.toModel() } ?: emptyList(),
+            fotoMascota = fotoMascota
         )
     }
 

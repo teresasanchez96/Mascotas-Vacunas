@@ -20,10 +20,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Cake
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,7 +38,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,18 +61,31 @@ import java.time.LocalDate
 import java.time.Period
 import java.time.format.DateTimeFormatter
 
-
 @Composable
 fun PantallaListaMascotas(
     navController: NavController,
     mascotaViewModel: MascotaViewModel = hiltViewModel()
 ) {
-
     val mascotas by mascotaViewModel.mascotas.collectAsState()
     val showDialog by mascotaViewModel.showDialog.collectAsState()
+    val cargandoInicial by mascotaViewModel.cargandoInicial.collectAsState()
+
+    val backStackEntry = navController.currentBackStackEntry!!
+
+    val fotoActualizadaId = backStackEntry
+        .savedStateHandle
+        .getStateFlow<Long?>("foto_actualizada_id", null)
+        .collectAsState()
 
     LaunchedEffect(Unit) {
         mascotaViewModel.cargarMascotas()
+    }
+
+    LaunchedEffect(fotoActualizadaId.value) {
+        fotoActualizadaId.value?.let { id ->
+            mascotaViewModel.recargarFotoMascota(id)
+            backStackEntry.savedStateHandle["foto_actualizada_id"] = null
+        }
     }
 
     Scaffold(
@@ -78,7 +95,7 @@ fun PantallaListaMascotas(
             BarraNavegacion(
                 pantallaActual = "mascotas",
                 onMascotasClick = {
-                    // Ya estamos en mascotas
+                    // Ya estamos en mascotas.
                 },
                 onVacunasClick = {
                     navController.navigate(ListaVacunas)
@@ -90,62 +107,84 @@ fun PantallaListaMascotas(
         }
     ) { innerPadding ->
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(
-                    horizontal = 20.dp,
-                    vertical = 18.dp
-                )
-        ) {
-
-            // Encabezado
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+        if (cargandoInicial) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
             ) {
-
-                Text(
-                    text = "Mis mascotas",
-                    color = Purple40,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold
+                CircularProgressIndicator(
+                    color = Purple40
                 )
-
-                FloatingActionButton(
-                    onClick = {
-                       navController.navigate(NuevaMascota)
-                    },
-                    modifier = Modifier.size(52.dp),
-                    containerColor = Purple40,
-                    contentColor = Color.White,
-                    shape = CircleShape
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Nueva mascota"
-                    )
-                }
             }
-
-            Spacer(
-                modifier = Modifier.height(18.dp)
-            )
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-
-                items(mascotas) { mascota ->
-
-                    MascotaItem(
-                        mascota = mascota,
-                        mascotaViewModel = mascotaViewModel,
-                        navController = navController
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(
+                        horizontal = 20.dp,
+                        vertical = 18.dp
                     )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "Mis mascotas",
+                            fontSize = 30.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Purple40
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = if (mascotas.size == 1) {
+                                "1 mascota registrada"
+                            } else {
+                                "${mascotas.size} mascotas registradas"
+                            },
+                            fontSize = 16.sp,
+                            color = Color(0xFF5F5965)
+                        )
+                    }
+
+                    FloatingActionButton(
+                        onClick = {
+                            navController.navigate(NuevaMascota)
+                        },
+                        modifier = Modifier.size(52.dp),
+                        containerColor = Purple40,
+                        contentColor = Color.White,
+                        shape = CircleShape
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Añadir mascota"
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(mascotas) { mascota ->
+                        MascotaItem(
+                            mascota = mascota,
+                            mascotaViewModel = mascotaViewModel,
+                            navController = navController
+                        )
+                    }
                 }
             }
         }
@@ -169,29 +208,32 @@ fun MascotaItem(
     mascotaViewModel: MascotaViewModel,
     navController: NavController
 ) {
+    val fotosMascotas by mascotaViewModel.fotosMascotas.collectAsState()
+    val idMascota = mascota.id
 
+    LaunchedEffect(idMascota) {
+        idMascota?.let {
+            mascotaViewModel.cargarFotoMascota(it)
+        }
+    }
 
     val imagenMascota = when (mascota.especie.lowercase()) {
         "perro" -> R.drawable.perro
         "gato" -> R.drawable.gato
         "conejo" -> R.drawable.conejo
-        "pájaro", "pajaro" -> R.drawable.pajaro
-        "hámster", "hamster" -> R.drawable.hamster
-        "tortuga" -> R.drawable.tortuga
         "hurón", "huron" -> R.drawable.huron
         else -> R.drawable.otramascota
     }
 
     val edad = calcularEdad(mascota.fechaNacimiento)
+    val foto = idMascota?.let { fotosMascotas[it] }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                mascota.id?.let { id ->
-                    navController.navigate(
-                        "detalle_mascota/$id"
-                    )
+                idMascota?.let { id ->
+                    navController.navigate("detalle_mascota/$id")
                 }
             },
         shape = RoundedCornerShape(22.dp),
@@ -201,8 +243,7 @@ fun MascotaItem(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
         )
-    )  {
-
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -212,26 +253,29 @@ fun MascotaItem(
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            if (foto != null) {
+                Image(
+                    bitmap = foto.asImageBitmap(),
+                    contentDescription = "Fotografía de ${mascota.nombre}",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .size(78.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = imagenMascota),
+                    contentDescription = "Ilustración de ${mascota.nombre}",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.size(78.dp)
+                )
+            }
 
-            // Imagen completa de la mascota
-            Image(
-                painter = painterResource(
-                    id = imagenMascota
-                ),
-                contentDescription = mascota.nombre,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.size(78.dp)
-            )
+            Spacer(modifier = Modifier.width(14.dp))
 
-            Spacer(
-                modifier = Modifier.width(14.dp)
-            )
-
-            // Información de la mascota
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-
                 Text(
                     text = mascota.nombre,
                     color = Color(0xFF25212A),
@@ -239,9 +283,7 @@ fun MascotaItem(
                     fontWeight = FontWeight.Bold
                 )
 
-                Spacer(
-                    modifier = Modifier.height(3.dp)
-                )
+                Spacer(modifier = Modifier.height(3.dp))
 
                 Text(
                     text = if (mascota.raza.isNotBlank()) {
@@ -253,25 +295,33 @@ fun MascotaItem(
                     fontSize = 14.sp
                 )
 
-                Spacer(
-                    modifier = Modifier.height(2.dp)
-                )
+                Spacer(modifier = Modifier.height(2.dp))
 
                 if (edad.isNotEmpty()) {
-                    Text(
-                        text = edad,
-                        color = Color(0xFF5F5965),
-                        fontSize = 14.sp
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Cake,
+                            contentDescription = "Edad",
+                            tint = Color(0xFF5F5965),
+                            modifier = Modifier.size(18.dp)
+                        )
+
+                        Spacer(modifier = Modifier.width(6.dp))
+
+                        Text(
+                            text = edad,
+                            color = Color(0xFF5F5965),
+                            fontSize = 14.sp
+                        )
+                    }
                 }
             }
 
-
-            // Eliminar mascota
             IconButton(
                 onClick = {
-
-                    mascota.id?.let {
+                    idMascota?.let {
                         mascotaViewModel.setIdMascota(it)
                         mascotaViewModel.changeShowDialog()
                     }
@@ -288,9 +338,7 @@ fun MascotaItem(
 }
 
 private fun calcularEdad(fechaNacimiento: String): String {
-
     return try {
-
         val fecha = LocalDate.parse(
             fechaNacimiento,
             DateTimeFormatter.ofPattern("dd/MM/yyyy")
@@ -316,12 +364,9 @@ private fun calcularEdad(fechaNacimiento: String): String {
                 }
             }
 
-            else -> {
-                "Menos de un mes"
-            }
+            else -> "Menos de un mes"
         }
-
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         ""
     }
 }
@@ -333,12 +378,9 @@ fun MyDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
-
     if (show) {
-
         AlertDialog(
             onDismissRequest = onDismiss,
-
             icon = {
                 Box(
                     modifier = Modifier
@@ -357,7 +399,6 @@ fun MyDialog(
                     )
                 }
             },
-
             title = {
                 Text(
                     text = "¿Eliminar mascota?",
@@ -366,7 +407,6 @@ fun MyDialog(
                     textAlign = TextAlign.Center
                 )
             },
-
             text = {
                 Text(
                     text = description,
@@ -374,7 +414,6 @@ fun MyDialog(
                     textAlign = TextAlign.Center
                 )
             },
-
             confirmButton = {
                 TextButton(
                     onClick = onConfirm
@@ -386,19 +425,16 @@ fun MyDialog(
                     )
                 }
             },
-
             dismissButton = {
                 TextButton(
                     onClick = onDismiss
                 ) {
                     Text(
                         text = "Cancelar",
-                        color = Purple40,
-                        fontWeight = FontWeight.SemiBold
+                        color = Purple40
                     )
                 }
             },
-
             containerColor = Color(0xFFF8F3FF),
             shape = RoundedCornerShape(24.dp)
         )
