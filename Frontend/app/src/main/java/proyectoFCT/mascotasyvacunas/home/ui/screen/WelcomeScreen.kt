@@ -55,7 +55,7 @@ fun PantallaBienvenida(
         // Imagen principal
         Image(
             painter = painterResource(
-                id = R.drawable.portada
+                id = R.drawable.portada2
             ),
             contentDescription = "Mascotas",
             modifier = Modifier.size(300.dp)
