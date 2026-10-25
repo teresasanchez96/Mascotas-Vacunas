@@ -35,6 +35,9 @@ public class Mascota {
     @Column
     private String observaciones;
 
+    @Column
+    private String fotoMascota;
+
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     @JsonIgnore
@@ -110,6 +113,14 @@ public class Mascota {
         this.observaciones = observaciones;
     }
 
+    public String getFotoMascota() {
+        return fotoMascota;
+    }
+
+    public void setFotoMascota(String fotoMascota) {
+        this.fotoMascota = fotoMascota;
+    }
+
     public Usuario getUsuario() {
         return usuario;
     }
@@ -117,6 +128,8 @@ public class Mascota {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
+
+
 
     @Override
     public String toString() {
@@ -128,6 +141,7 @@ public class Mascota {
                 ", raza='" + raza + '\'' +
                 ", fechaNacimiento=" + fechaNacimiento +
                 ", observaciones='" + observaciones + '\'' +
+                ", fotoMascota='" + fotoMascota + '\'' +
                 '}';
     }
 }

@@ -8,44 +8,46 @@ import proyecto.mascotasvacunas.entity.Usuario;
 import proyecto.mascotasvacunas.repository.MascotaRepository;
 import proyecto.mascotasvacunas.repository.UsuarioRepository;
 
+import java.io.IOException;
 import java.util.List;
 
 /*
  * Esta clase contiene la lógica relacionada con las mascotas.
- * Se encarga de consultar, crear, modificar y eliminar mascotas.
+ * Se encarga de consultar, crear, modificar y eliminar mascotas,
+ * así como de actualizar sus fotografías.
  */
 @Service
 public class MascotaService {
 
     private final MascotaRepository mascotaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final FotoMascotaService fotoMascotaService;
 
-    public MascotaService(MascotaRepository mascotaRepository,
-                          UsuarioRepository usuarioRepository) {
+    public MascotaService(
+            MascotaRepository mascotaRepository,
+            UsuarioRepository usuarioRepository,
+            FotoMascotaService fotoMascotaService) {
         this.mascotaRepository = mascotaRepository;
         this.usuarioRepository = usuarioRepository;
+        this.fotoMascotaService = fotoMascotaService;
     }
 
     // Obtiene las mascotas del usuario que ha iniciado sesión.
     public List<Mascota> findAll() {
-
         Usuario usuario = obtenerUsuarioAutenticado();
-
         return mascotaRepository.findByUsuario(usuario);
     }
 
-    // Busca una mascota por su ID comprobando que pertenece al usuario.
+    // Busca una mascota comprobando que pertenece al usuario.
     public Mascota findById(Long id) {
-
         Usuario usuario = obtenerUsuarioAutenticado();
 
         Mascota mascota = mascotaRepository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException("Mascota no encontrada"));
 
-        if (mascota.getUsuario() == null ||
-                !mascota.getUsuario().getId().equals(usuario.getId())) {
-
+        if (mascota.getUsuario() == null
+                || !mascota.getUsuario().getId().equals(usuario.getId())) {
             throw new RuntimeException(
                     "La mascota no pertenece al usuario");
         }
@@ -53,9 +55,8 @@ public class MascotaService {
         return mascota;
     }
 
-    // Guarda una nueva mascota asociándola al usuario que ha iniciado sesión.
+    // Guarda una nueva mascota y la asocia al usuario autenticado.
     public Mascota save(Mascota mascota) {
-
         Usuario usuario = obtenerUsuarioAutenticado();
 
         mascota.setUsuario(usuario);
@@ -63,9 +64,8 @@ public class MascotaService {
         return mascotaRepository.save(mascota);
     }
 
-    // Modifica los datos de una mascota perteneciente al usuario.
+    // Modifica los datos de una mascota sin alterar su fotografía.
     public Mascota update(Long id, Mascota mascotaDetails) {
-
         Mascota mascota = findById(id);
 
         mascota.setNombre(mascotaDetails.getNombre());
@@ -78,19 +78,40 @@ public class MascotaService {
         return mascotaRepository.save(mascota);
     }
 
-    // Elimina una mascota perteneciente al usuario.
-    public void delete(Long id) {
-
+    // Actualiza la fotografía de una mascota del usuario autenticado.
+    public Mascota actualizarFotoMascota(Long id, String nombreFotoMascota) {
         Mascota mascota = findById(id);
 
-        mascotaRepository.delete(mascota);
+        mascota.setFotoMascota(nombreFotoMascota);
+
+        return mascotaRepository.save(mascota);
     }
 
-    // Obtiene el usuario que ha iniciado sesión.
-    private Usuario obtenerUsuarioAutenticado() {
+    // Elimina una mascota perteneciente al usuario y su fotografía, si tiene una.
+    public void delete(Long id) {
+        Mascota mascota = findById(id);
+        String foto = mascota.getFotoMascota();
 
+        mascotaRepository.delete(mascota);
+
+        if (foto != null && !foto.isBlank()) {
+            try {
+                fotoMascotaService.eliminarFoto(foto);
+            } catch (IOException e) {
+                throw new RuntimeException(
+                        "No se ha podido eliminar la fotografía", e);
+            }
+        }
+    }
+
+    // Obtiene el usuario que ha iniciado sesión mediante JWT.
+    private Usuario obtenerUsuarioAutenticado() {
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("Usuario no autenticado");
+        }
 
         String email = authentication.getName();
 
