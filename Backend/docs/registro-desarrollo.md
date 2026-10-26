@@ -1,6 +1,6 @@
 # Registro de desarrollo de la API REST
 
-## Día 1 — Creación y configuración inicial
+## Día 1 — 29/09/2026 — Creación y configuración inicial
 
 Durante esta primera fase he creado la API REST utilizando Spring Boot y he realizado la configuración inicial del proyecto.
 
@@ -28,7 +28,7 @@ He realizado el siguiente commit:
 `Creación del modelo de datos y estructura inicial de la API REST`
 
 
-## Día 2 — Ajustes del modelo de datos y autenticación
+## Día 2 — 01/10/2026 — Ajustes del modelo de datos y autenticación
 
 Durante esta fase he realizado algunos ajustes en el modelo de datos de la API y he comenzado la implementación del sistema de autenticación y seguridad de los usuarios.
 
@@ -63,7 +63,7 @@ He realizado los siguientes commits:
 
 `Implementar autenticación de usuarios con JWT y BCrypt`
 
-## Día 3 — Desarrollo y pruebas de la API
+## Día 3 — 03/10/2026 — Desarrollo y pruebas de la API
 
 ### Trabajo realizado
 
@@ -90,5 +90,77 @@ He realizado los siguientes commits:
 `Actualizar acceso a mascotas, vacunas y vacunaciones`
 
 `Actualizar configuración de JWT`
+
+`Actualizar documentación del proyecto`
+
+## Día 4 — 24/10/2026 — Reorganización de la estructura del proyecto
+
+Durante esta fase he comenzado a reorganizar una copia del proyecto para separar la aplicación Android de la API REST y facilitar su mantenimiento.
+
+### Trabajo realizado
+
+- Reorganización de la estructura del proyecto.
+- Separación de la aplicación Android en la carpeta `Frontend` y de la API REST en la carpeta `Backend`.
+- Revisión de la estructura de directorios después de los cambios.
+- Comprobación de la compilación de los proyectos después de la reorganización.
+
+### Uso de herramientas de IA
+
+He utilizado ChatGPT y Codex como herramientas de apoyo para revisar la nueva estructura del proyecto, resolver dudas durante la reorganización y comprobar que los cambios no afectaran al funcionamiento de la aplicación Android ni de la API REST.
+
+### Control de versiones
+
+La reorganización se registró mediante el siguiente commit, realizado el 25/10/2026:
+
+`Reorganizar proyecto en Frontend y Backend`
+
+## Día 5 — 25/10/2026 — Implementación de fotografías de mascotas
+
+Durante esta fase he incorporado la funcionalidad para gestionar fotografías reales de las mascotas en la API REST.
+
+### Trabajo realizado
+
+- Adaptación de la entidad `Mascota` para almacenar la referencia a la fotografía.
+- Creación del servicio `FotoMascotaService` para gestionar el almacenamiento de imágenes.
+- Incorporación de un endpoint para subir fotografías de mascotas.
+- Incorporación de un endpoint para consultar las fotografías almacenadas.
+- Configuración del directorio de almacenamiento de las imágenes.
+- Generación de nombres únicos para los archivos de fotografía.
+- Revisión de los cambios realizados en los servicios y controladores.
+- Comprobación de la compilación de la API después de los cambios.
+
+### Uso de herramientas de IA
+
+He utilizado ChatGPT y Codex como herramientas de apoyo para implementar la gestión de fotografías de mascotas, revisar los cambios realizados en las entidades, servicios y controladores y resolver dudas durante el desarrollo.
+
+### Control de versiones
+
+He realizado el siguiente commit en la API original:
+
+`Implementar la gestión de fotografías de mascotas`
+
+## Día 6 — 26/10/2026 — Implementación de fotografías de las etiquetas de las vacunas
+
+Durante esta fase he comenzado a adaptar la API REST original para permitir guardar y consultar fotografías de las etiquetas de las vacunas administradas a las mascotas.
+
+### Trabajo realizado
+
+- Ampliación de la entidad `Vacunacion` con el campo `fotoEtiqueta`, destinado a almacenar el nombre del archivo de la fotografía.
+- Creación del servicio `FotoVacunacionService` para gestionar el almacenamiento de las imágenes.
+- Configuración del directorio de almacenamiento `uploads/vacunaciones`.
+- Generación de nombres únicos para los archivos mediante UUID.
+- Validación de los archivos recibidos para aceptar los formatos de imagen admitidos.
+- Incorporación al servicio `VacunacionService` de un método para actualizar la fotografía de una vacunación.
+- Adaptación del controlador `VacunacionController` para incorporar un endpoint que permita subir la fotografía de la etiqueta.
+- Incorporación de un endpoint para consultar la fotografía almacenada.
+- Revisión de las comprobaciones de acceso a las vacunaciones del usuario autenticado.
+
+### Uso de herramientas de IA
+
+He utilizado ChatGPT y Codex como herramientas de apoyo durante el desarrollo para resolver dudas técnicas, revisar los cambios realizados en las entidades, servicios y controladores, y analizar posibles soluciones para implementar la funcionalidad de almacenamiento y consulta de fotografías de las etiquetas de las vacunas.
+
+### Control de versiones
+
+`Implementar la gestión de fotografías de etiquetas de vacunación`
 
 `Actualizar documentación del proyecto`
