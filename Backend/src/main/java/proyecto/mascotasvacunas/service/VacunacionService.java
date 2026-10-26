@@ -69,6 +69,7 @@ public class VacunacionService {
         return vacunacionRepository.save(vacunacion);
     }
 
+
     // Actualiza una vacunación perteneciente al usuario.
     public Vacunacion update(Long id, Vacunacion vacunacionDetails) {
 
@@ -86,8 +87,21 @@ public class VacunacionService {
                 vacunacionDetails.getFechaAdministracion()
         );
 
+        // Actualizar la vacuna asociada si se ha seleccionado una.
+        if (vacunacionDetails.getVacuna() != null
+                && vacunacionDetails.getVacuna().getId() != null) {
+
+            Vacuna vacuna = vacunaRepository.findById(
+                    vacunacionDetails.getVacuna().getId()
+            ).orElseThrow(() ->
+                    new RuntimeException("Vacuna no encontrada"));
+
+            vacunacion.setVacuna(vacuna);
+        }
+
         return vacunacionRepository.save(vacunacion);
     }
+
 
     // Elimina una vacunación perteneciente al usuario.
     public void delete(Long id) {
@@ -160,5 +174,12 @@ public class VacunacionService {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new RuntimeException("Usuario no encontrado"));
+    }
+
+    // Actualiza la fotografía de la etiqueta de una vacunación.
+    public Vacunacion actualizarFotoEtiqueta(Long id, String nombreFoto) {
+        Vacunacion vacunacion = findById(id);
+        vacunacion.setFotoEtiqueta(nombreFoto);
+        return vacunacionRepository.save(vacunacion);
     }
 }

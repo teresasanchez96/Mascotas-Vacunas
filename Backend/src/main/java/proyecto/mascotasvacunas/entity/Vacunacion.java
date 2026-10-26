@@ -26,6 +26,9 @@ public class Vacunacion {
     @Column
     private LocalDate fechaAdministracion;
 
+    @Column(name = "foto_etiqueta")
+    private String fotoEtiqueta;
+
     @ManyToOne
     @JoinColumn(name = "mascota_id", nullable = false)
     @JsonIgnore
@@ -80,6 +83,14 @@ public class Vacunacion {
         this.fechaAdministracion = fechaAdministracion;
     }
 
+    public String getFotoEtiqueta() {
+        return fotoEtiqueta;
+    }
+
+    public void setFotoEtiqueta(String fotoEtiqueta) {
+        this.fotoEtiqueta = fotoEtiqueta;
+    }
+
     public Mascota getMascota() {
         return mascota;
     }
@@ -103,6 +114,7 @@ public class Vacunacion {
                 ", fechaPrevista=" + fechaPrevista +
                 ", vacunaAdministrada=" + vacunaAdministrada +
                 ", fechaAdministracion=" + fechaAdministracion +
+                ", fotoEtiqueta='" + fotoEtiqueta + '\'' +
                 '}';
     }
 }
