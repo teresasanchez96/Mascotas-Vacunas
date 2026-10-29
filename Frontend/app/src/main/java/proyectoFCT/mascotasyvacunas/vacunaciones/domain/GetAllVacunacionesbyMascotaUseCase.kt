@@ -1,4 +1,4 @@
-package proyectoFCT.mascotasyvacunas.vacunaciones.data.network
+package proyectoFCT.mascotasyvacunas.vacunaciones.domain
 
 import javax.inject.Inject
 
