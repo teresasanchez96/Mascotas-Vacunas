@@ -6,11 +6,12 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 data class VacunacionResponse(
-                              val id: Long?,
-                              val fechaPrevista: String,
-                              val vacunaAdministrada: Boolean,
-                              val fechaAdministracion: String?,
-                              val vacuna: VacunaResponse
+    val id: Long?,
+    val fechaPrevista: String,
+    val vacunaAdministrada: Boolean,
+    val fechaAdministracion: String?,
+    val fotoEtiqueta: String? = null,
+    val vacuna: VacunaResponse
 ) {
     fun toModel(): Vacunacion {
         return Vacunacion(
@@ -18,6 +19,7 @@ data class VacunacionResponse(
             fechaPrevista = formatDate(fechaPrevista),
             vacunaAdministrada = vacunaAdministrada,
             fechaAdministracion = fechaAdministracion?.let { formatDate(it) },
+            fotoEtiqueta = fotoEtiqueta,
             vacuna = vacuna.toModel()
         )
     }

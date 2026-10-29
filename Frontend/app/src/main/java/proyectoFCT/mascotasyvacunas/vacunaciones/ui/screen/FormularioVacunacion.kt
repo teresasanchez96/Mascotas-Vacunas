@@ -508,6 +508,7 @@ private fun CampoFechaVacunacion(
 private fun mostrarSelectorFecha(
     context: Context,
     fechaActual: String,
+    permitirFechaFutura: Boolean = true,
     onFechaSeleccionada: (String) -> Unit
 ) {
     val calendario = Calendar.getInstance()
@@ -523,7 +524,7 @@ private fun mostrarSelectorFecha(
         }
     }
 
-    DatePickerDialog(
+    val selector = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
             val fecha = String.format(
@@ -539,5 +540,18 @@ private fun mostrarSelectorFecha(
         calendario.get(Calendar.YEAR),
         calendario.get(Calendar.MONTH),
         calendario.get(Calendar.DAY_OF_MONTH)
-    ).show()
+    )
+
+    if (!permitirFechaFutura) {
+        val finDeHoy = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 23)
+            set(Calendar.MINUTE, 59)
+            set(Calendar.SECOND, 59)
+            set(Calendar.MILLISECOND, 999)
+        }
+
+        selector.datePicker.maxDate = finDeHoy.timeInMillis
+    }
+
+    selector.show()
 }

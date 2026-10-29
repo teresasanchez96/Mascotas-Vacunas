@@ -10,6 +10,7 @@ data class Vacunacion(
     val fechaPrevista: String,
     val vacunaAdministrada: Boolean,
     val fechaAdministracion: String?,
+    val fotoEtiqueta: String? = null,
     val vacuna: Vacuna
 ) {
 
@@ -21,6 +22,7 @@ data class Vacunacion(
             fechaAdministracion = fechaAdministracion?.let {
                 formatDate(it)
             },
+            fotoEtiqueta = fotoEtiqueta,
             vacuna = vacuna.toVacunaResponse()
         )
     }

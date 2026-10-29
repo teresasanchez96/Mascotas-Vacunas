@@ -1,10 +1,16 @@
 package proyectoFCT.mascotasyvacunas.vacunaciones.ui.screen
 
+import android.graphics.Bitmap
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
@@ -29,6 +36,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -86,6 +94,7 @@ fun PantallaVacunacionesMascota(
     val fotosMascotas by mascotaViewModel.fotosMascotas.collectAsState()
 
     val fotosMascotasCargadas by mascotaViewModel.fotosMascotasCargadas.collectAsState()
+    val fotosEtiquetas by vacunacionViewModel.fotosEtiquetas.collectAsState()
 
     val mascota = mascotas.find {
         it.id == mascotaId
@@ -124,6 +133,15 @@ fun PantallaVacunacionesMascota(
         mascotaViewModel.cargarMascotas()
         vacunacionViewModel.cargarVacunaciones(mascotaId)
         vacunaViewModel.cargarVacunas()
+    }
+
+    // Cargar las fotografías de las etiquetas de las vacunaciones.
+    LaunchedEffect(vacunaciones) {
+        vacunaciones.forEach { vacunacion ->
+            if (vacunacion.id != null && !vacunacion.fotoEtiqueta.isNullOrBlank()) {
+                vacunacionViewModel.cargarFotoEtiqueta(vacunacion.id)
+            }
+        }
     }
 
     Scaffold(
@@ -335,19 +353,19 @@ fun PantallaVacunacionesMascota(
                 Tab(
                     selected = indiceSeleccionado == 0,
                     onClick = { indiceSeleccionado = 0 },
-                    text = { Text("Todas", fontSize = 14.sp) }
+                    text = { Text("Todas", fontSize = 12.sp) }
                 )
 
                 Tab(
                     selected = indiceSeleccionado == 1,
                     onClick = { indiceSeleccionado = 1 },
-                    text = { Text("Administradas", fontSize = 14.sp) }
+                    text = { Text("Administradas", fontSize = 12.sp) }
                 )
 
                 Tab(
                     selected = indiceSeleccionado == 2,
                     onClick = { indiceSeleccionado = 2 },
-                    text = { Text("Pendientes", fontSize = 14.sp) }
+                    text = { Text("Pendientes", fontSize = 12.sp) }
                 )
             }
 
@@ -419,6 +437,9 @@ fun PantallaVacunacionesMascota(
 
                         TarjetaVacunacion(
                             vacunacion = vacunacion,
+                            mascotaId = mascotaId,
+                            fotoEtiqueta = vacunacion.id?.let { fotosEtiquetas[it] },
+                            vacunacionViewModel = vacunacionViewModel,
 
                             onEditar = {
                                 vacunacionEditar = vacunacion
@@ -592,219 +613,328 @@ fun PantallaVacunacionesMascota(
 @Composable
 private fun TarjetaVacunacion(
     vacunacion: Vacunacion,
+    mascotaId: Long,
+    fotoEtiqueta: Bitmap?,
+    vacunacionViewModel: VacunacionViewModel,
     onEditar: () -> Unit,
     onEliminar: () -> Unit
 ) {
 
     val colorEstado = if (vacunacion.vacunaAdministrada) {
-
         Color(0xFF2E7D32)
-
     } else {
-
         Color(0xFFEF6C00)
     }
 
+    val context = androidx.compose.ui.platform.LocalContext.current
+
+    var mostrarFotoEtiquetaAmpliada by remember {
+        mutableStateOf(false)
+    }
+
+    val selectorImagen = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null && vacunacion.id != null) {
+            vacunacionViewModel.subirFotoEtiqueta(
+                context = context,
+                mascotaId = mascotaId,
+                vacunacionId = vacunacion.id,
+                uri = uri
+            )
+        }
+    }
+
     Card(
-
         modifier = Modifier.fillMaxWidth(),
-
         shape = RoundedCornerShape(18.dp),
-
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
-
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        )
-
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-
-        Column(
-            modifier = Modifier.padding(18.dp)
-        ) {
-
-            // Cabecera de la tarjeta.
+        Column(modifier = Modifier.padding(14.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
-                // Icono de vacuna.
                 Box(
-
                     modifier = Modifier
                         .size(48.dp)
                         .background(
                             color = MaterialTheme.colorScheme.primaryContainer,
                             shape = RoundedCornerShape(14.dp)
                         ),
-
                     contentAlignment = Alignment.Center
-
                 ) {
-
-                    Text(
-                        text = "💉",
-                        style = MaterialTheme.typography.titleLarge
-                    )
+                    Text(text = "💉", style = MaterialTheme.typography.titleLarge)
                 }
 
-                Spacer(
-                    modifier = Modifier.width(12.dp)
-                )
+                Spacer(modifier = Modifier.width(12.dp))
 
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = vacunacion.vacuna.nombreVacuna,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
-
-                    Spacer(
-                        modifier = Modifier.height(5.dp)
-                    )
-
-                    // Estado de la vacunación.
+                    Spacer(modifier = Modifier.height(5.dp))
                     Box(
-
                         modifier = Modifier
                             .background(
                                 color = colorEstado.copy(alpha = 0.12f),
                                 shape = RoundedCornerShape(50)
                             )
-                            .padding(
-                                horizontal = 10.dp,
-                                vertical = 5.dp
-                            )
-
+                            .padding(horizontal = 10.dp, vertical = 5.dp)
                     ) {
-
                         Text(
-
-                            text = if (vacunacion.vacunaAdministrada) {
-                                "ADMINISTRADA"
-                            } else {
-                                "PENDIENTE"
-                            },
-
+                            text = if (vacunacion.vacunaAdministrada) "ADMINISTRADA" else "PENDIENTE",
                             color = colorEstado,
-
                             style = MaterialTheme.typography.labelMedium,
-
                             fontWeight = FontWeight.Bold
                         )
                     }
                 }
 
-                IconButton(
-                    onClick = onEditar
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "Editar" ,
-                        tint = Purple40
+                        contentDescription = "Editar",
+                        tint = Purple40,
+                        modifier = Modifier
+                            .size(22.dp)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = onEditar
+                            )
                     )
-                }
-
-                IconButton(
-                    onClick = onEliminar
-                ) {
 
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Eliminar",
-                        tint = Color(0xFFD96C78)
+                        tint = Color(0xFFD96C78),
+                        modifier = Modifier
+                            .size(22.dp)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = onEliminar
+                            )
                     )
                 }
             }
 
-            Spacer(
-                modifier = Modifier.height(18.dp)
-            )
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // Fecha prevista.
+            // Fecha prevista
             Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Color(0xFFF1EBFA))
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Icon(
                     imageVector = Icons.Default.CalendarToday,
                     contentDescription = null,
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(22.dp),
                     tint = Purple40
                 )
-
-                Spacer(
-                    modifier = Modifier.width(10.dp)
+                Spacer(modifier = Modifier.width(14.dp))
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(34.dp)
+                        .background(Color(0xFFD8C9EE))
                 )
-
+                Spacer(modifier = Modifier.width(14.dp))
                 Column {
-
                     Text(
                         text = "Fecha prevista",
-                        style = MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-
                     Text(
                         text = vacunacion.fechaPrevista,
                         style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             }
 
-            // Fecha de administración.
-            if (
-                vacunacion.vacunaAdministrada &&
-                vacunacion.fechaAdministracion != null
-            ) {
-
-                Spacer(
-                    modifier = Modifier.height(14.dp)
-                )
-
+            if (vacunacion.vacunaAdministrada && vacunacion.fechaAdministracion != null) {
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(Color(0xFFEAF4EB))
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                        tint = colorEstado
+                        modifier = Modifier.size(22.dp),
+                        tint = Color(0xFF2E7D32)
                     )
-
-                    Spacer(
-                        modifier = Modifier.width(10.dp)
+                    Spacer(modifier = Modifier.width(14.dp))
+                    Box(
+                        modifier = Modifier
+                            .width(1.dp)
+                            .height(34.dp)
+                            .background(Color(0xFFC9E1CC))
                     )
-
+                    Spacer(modifier = Modifier.width(14.dp))
                     Column {
-
                         Text(
                             text = "Administrada el",
-                            style = MaterialTheme.typography.labelMedium,
+                            style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-
                         Text(
                             text = vacunacion.fechaAdministracion,
                             style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.SemiBold
                         )
+                    }
+                }
+            }
+
+            if (vacunacion.vacunaAdministrada) {
+                Spacer(modifier = Modifier.height(12.dp))
+                HorizontalDivider(color = Color(0xFFE5DCEF))
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Etiqueta de la vacuna, se puede ampliar al pulsarla.
+                Text(
+                    text = "Etiqueta de la vacuna",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(65.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (fotoEtiqueta != null) {
+                        Image(
+                            bitmap = fotoEtiqueta.asImageBitmap(),
+                            contentDescription =
+                            "Ver etiqueta de ${vacunacion.vacuna.nombreVacuna} ampliada",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clickable {
+                                    mostrarFotoEtiquetaAmpliada = true
+                                }
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color(0xFFF1EBFA))
+                                .clickable {
+                                    selectorImagen.launch("image/*")
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AddPhotoAlternate,
+                                contentDescription = "Añadir etiqueta",
+                                tint = Purple40,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(2.dp))
+
+                TextButton(
+                    onClick = {
+                        selectorImagen.launch("image/*")
+                    },
+                    modifier = Modifier.height(36.dp),
+                    contentPadding = PaddingValues(0.dp)
+                ) {
+                    Text(
+                        text = if (
+                            fotoEtiqueta != null ||
+                            !vacunacion.fotoEtiqueta.isNullOrBlank()
+                        ) {
+                            "Cambiar etiqueta"
+                        } else {
+                            "Añadir etiqueta"
+                        },
+                        color = Purple40,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+        }
+
+    }
+
+    // Diálogo para consultar la etiqueta completa al pulsar su imagen.
+    if (vacunacion.vacunaAdministrada && mostrarFotoEtiquetaAmpliada && fotoEtiqueta != null) {
+        Dialog(
+            onDismissRequest = { mostrarFotoEtiquetaAmpliada = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth(0.96f)
+                    .widthIn(max = 600.dp),
+                shape = RoundedCornerShape(16.dp),
+                color = Color(0xFFF7F2FF),
+                shadowElevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Etiqueta de ${vacunacion.vacuna.nombreVacuna}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Purple40,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Image(
+                        bitmap = fotoEtiqueta.asImageBitmap(),
+                        contentDescription = "Etiqueta completa de ${vacunacion.vacuna.nombreVacuna}",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    TextButton(
+                        onClick = { mostrarFotoEtiquetaAmpliada = false }
+                    ) {
+                        Text("Cerrar", color = Purple40)
                     }
                 }
             }
         }
     }
 }
-
 
 /**
  * Calcula la edad a partir de la fecha de nacimiento.
