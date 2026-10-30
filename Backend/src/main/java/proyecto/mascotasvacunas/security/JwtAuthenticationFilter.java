@@ -4,9 +4,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -38,6 +40,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
+        // Si no hay token, continúa y Spring Security
+        // impedirá el acceso a los endpoints protegidos.
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -45,29 +49,51 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
 
+        // Comprueba que el token sea válido.
         if (!jwtService.esTokenValido(token)) {
-            filterChain.doFilter(request, response);
+            SecurityContextHolder.clearContext();
+            enviarErrorNoAutorizado(response);
             return;
         }
 
-        String email = jwtService.extraerEmail(token);
+        try {
 
-        UserDetails userDetails =
-                userDetailsService.loadUserByUsername(email);
+            String email = jwtService.extraerEmail(token);
 
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
+            UserDetails userDetails =
+                    userDetailsService.loadUserByUsername(email);
 
-        authentication.setDetails(
-                new WebAuthenticationDetailsSource().buildDetails(request)
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+
+            authentication.setDetails(
+                    new WebAuthenticationDetailsSource().buildDetails(request)
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            filterChain.doFilter(request, response);
+
+        } catch (UsernameNotFoundException e) {
+            SecurityContextHolder.clearContext();
+            enviarErrorNoAutorizado(response);
+        }
+    }
+
+    // Devuelve una respuesta HTTP 401.
+    private void enviarErrorNoAutorizado(
+            HttpServletResponse response) throws IOException {
+
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        response.getWriter().write(
+                "{\"error\":\"Token no válido o usuario no encontrado\"}"
         );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        filterChain.doFilter(request, response);
     }
 }
