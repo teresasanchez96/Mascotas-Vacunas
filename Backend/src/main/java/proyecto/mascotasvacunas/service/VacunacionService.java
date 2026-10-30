@@ -1,8 +1,10 @@
 package proyecto.mascotasvacunas.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import proyecto.mascotasvacunas.entity.Mascota;
 import proyecto.mascotasvacunas.entity.Usuario;
 import proyecto.mascotasvacunas.entity.Vacuna;
@@ -50,24 +52,23 @@ public class VacunacionService {
 
         Vacunacion vacunacion = vacunacionRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Vacunación no encontrada"));
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Vacunación no encontrada"));
 
         if (vacunacion.getMascota() == null ||
                 vacunacion.getMascota().getUsuario() == null ||
                 !vacunacion.getMascota().getUsuario().getId()
                         .equals(usuario.getId())) {
 
-            throw new RuntimeException(
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
                     "La vacunación no pertenece al usuario");
         }
 
         return vacunacion;
     }
 
-    // Guarda una vacunación.
-    public Vacunacion save(Vacunacion vacunacion) {
-        return vacunacionRepository.save(vacunacion);
-    }
 
 
     // Actualiza una vacunación perteneciente al usuario.
@@ -91,10 +92,10 @@ public class VacunacionService {
         if (vacunacionDetails.getVacuna() != null
                 && vacunacionDetails.getVacuna().getId() != null) {
 
-            Vacuna vacuna = vacunaRepository.findById(
-                    vacunacionDetails.getVacuna().getId()
-            ).orElseThrow(() ->
-                    new RuntimeException("Vacuna no encontrada"));
+            Vacuna vacuna = buscarVacunaDelUsuario(
+                    vacunacionDetails.getVacuna().getId(),
+                    obtenerUsuarioAutenticado()
+            );
 
             vacunacion.setVacuna(vacuna);
         }
@@ -118,14 +119,16 @@ public class VacunacionService {
 
         // Buscar la mascota en la base de datos.
         Mascota mascota = mascotaRepository.findById(mascotaId)
-                .orElseThrow(() ->
-                        new RuntimeException("Mascota no encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Mascota no encontrada"));
 
         // Comprobar que la mascota pertenece al usuario.
         if (mascota.getUsuario() == null ||
                 !mascota.getUsuario().getId().equals(usuario.getId())) {
 
-            throw new RuntimeException(
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
                     "La mascota no pertenece al usuario");
         }
 
@@ -133,15 +136,16 @@ public class VacunacionService {
         if (vacunacion.getVacuna() == null ||
                 vacunacion.getVacuna().getId() == null) {
 
-            throw new RuntimeException(
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
                     "La vacuna es obligatoria");
         }
 
-        // Buscar la vacuna real en la base de datos.
-        Vacuna vacuna = vacunaRepository.findById(
-                vacunacion.getVacuna().getId()
-        ).orElseThrow(() ->
-                new RuntimeException("Vacuna no encontrada"));
+        // Buscar la vacuna comprobando que pertenece al usuario.
+        Vacuna vacuna = buscarVacunaDelUsuario(
+                vacunacion.getVacuna().getId(),
+                usuario
+        );
 
         // Asociar las entidades reales.
         vacunacion.setMascota(mascota);
@@ -155,6 +159,20 @@ public class VacunacionService {
 
         Usuario usuario = obtenerUsuarioAutenticado();
 
+        // Comprobar que la mascota existe y pertenece al usuario.
+        Mascota mascota = mascotaRepository.findById(mascotaId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Mascota no encontrada"));
+
+        if (mascota.getUsuario() == null
+                || !mascota.getUsuario().getId().equals(usuario.getId())) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Mascota no encontrada");
+        }
+
         return vacunacionRepository
                 .findByMascotaUsuario(usuario)
                 .stream()
@@ -163,17 +181,46 @@ public class VacunacionService {
                 .toList();
     }
 
+    // Busca una vacuna y comprueba que pertenece al usuario.
+    private Vacuna buscarVacunaDelUsuario(Long vacunaId, Usuario usuario) {
+
+        Vacuna vacuna = vacunaRepository.findById(vacunaId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Vacuna no encontrada"));
+
+        if (vacuna.getUsuario() == null
+                || !vacuna.getUsuario().getId().equals(usuario.getId())) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Vacuna no encontrada");
+        }
+
+        return vacuna;
+    }
+
     // Obtiene el usuario que ha iniciado sesión.
     private Usuario obtenerUsuarioAutenticado() {
 
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
 
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Usuario no autenticado");
+        }
+
         String email = authentication.getName();
 
         return usuarioRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Usuario no encontrado"));
     }
 
     // Actualiza la fotografía de la etiqueta de una vacunación.

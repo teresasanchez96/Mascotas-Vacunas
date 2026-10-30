@@ -1,8 +1,10 @@
 package proyecto.mascotasvacunas.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import proyecto.mascotasvacunas.entity.Mascota;
 import proyecto.mascotasvacunas.entity.Usuario;
 import proyecto.mascotasvacunas.repository.MascotaRepository;
@@ -43,12 +45,14 @@ public class MascotaService {
         Usuario usuario = obtenerUsuarioAutenticado();
 
         Mascota mascota = mascotaRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Mascota no encontrada"));
+                .orElseThrow(() ->new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Mascota no encontrada"));
 
         if (mascota.getUsuario() == null
                 || !mascota.getUsuario().getId().equals(usuario.getId())) {
-            throw new RuntimeException(
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
                     "La mascota no pertenece al usuario");
         }
 
@@ -98,8 +102,9 @@ public class MascotaService {
             try {
                 fotoMascotaService.eliminarFoto(foto);
             } catch (IOException e) {
-                throw new RuntimeException(
-                        "No se ha podido eliminar la fotografía", e);
+                System.err.println(
+                        "No se ha podido eliminar la fotografía de la mascota: "
+                                + e.getMessage());
             }
         }
     }
@@ -109,14 +114,19 @@ public class MascotaService {
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("Usuario no autenticado");
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Usuario no autenticado");
         }
 
         String email = authentication.getName();
 
         return usuarioRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Usuario no encontrado"));
     }
 }

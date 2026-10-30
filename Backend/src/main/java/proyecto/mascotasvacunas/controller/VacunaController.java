@@ -29,12 +29,7 @@ public class VacunaController {
     // Busca una vacuna por su ID.
     @GetMapping("/{id}")
     public ResponseEntity<Vacuna> getVacunaById(@PathVariable Long id) {
-        try {
-            Vacuna vacuna = vacunaService.findById(id);
-            return ResponseEntity.ok(vacuna);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(vacunaService.findById(id));
     }
 
     // Guarda una vacuna.
@@ -49,23 +44,13 @@ public class VacunaController {
             @PathVariable Long id,
             @RequestBody Vacuna vacuna) {
 
-        try {
-            return ResponseEntity.ok(
-                    vacunaService.update(id, vacuna)
-            );
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(vacunaService.update(id, vacuna));
     }
 
     // Elimina una vacuna.
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVacuna(@PathVariable Long id) {
-        try {
-            vacunaService.delete(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        vacunaService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

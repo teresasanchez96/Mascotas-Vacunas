@@ -1,8 +1,10 @@
 package proyecto.mascotasvacunas.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import proyecto.mascotasvacunas.entity.Usuario;
 import proyecto.mascotasvacunas.entity.Vacuna;
 import proyecto.mascotasvacunas.repository.UsuarioRepository;
@@ -40,13 +42,15 @@ public class VacunaService {
         Usuario usuario = obtenerUsuarioAutenticado();
 
         Vacuna vacuna = vacunaRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Vacuna no encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Vacuna no encontrada"));
 
         if (vacuna.getUsuario() == null ||
                 !vacuna.getUsuario().getId().equals(usuario.getId())) {
 
-            throw new RuntimeException(
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
                     "La vacuna no pertenece al usuario");
         }
 
@@ -87,10 +91,20 @@ public class VacunaService {
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
 
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Usuario no autenticado");
+        }
+
         String email = authentication.getName();
 
         return usuarioRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Usuario no encontrado"));
     }
 }

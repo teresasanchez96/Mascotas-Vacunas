@@ -38,36 +38,21 @@ public class MascotaController {
     // Obtiene todas las mascotas del usuario que ha iniciado sesión.
     @GetMapping
     public ResponseEntity<List<Mascota>> getAllMascotas() {
-        try {
-            return ResponseEntity.ok(
-                    mascotaService.findAll()
-            );
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(mascotaService.findAll());
     }
 
     // Busca una mascota por su ID.
     @GetMapping("/{id}")
     public ResponseEntity<Mascota> getMascotaById(
             @PathVariable Long id) {
-        try {
-            Mascota mascota = mascotaService.findById(id);
-            return ResponseEntity.ok(mascota);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(mascotaService.findById(id));
     }
 
     // Guarda una nueva mascota para el usuario que ha iniciado sesión.
     @PostMapping
     public ResponseEntity<Mascota> saveMascota(
             @RequestBody Mascota mascota) {
-        try {
-            return ResponseEntity.ok(mascotaService.save(mascota));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(mascotaService.save(mascota));
     }
 
     // Modifica los datos de una mascota existente.
@@ -75,26 +60,19 @@ public class MascotaController {
     public ResponseEntity<Mascota> updateMascota(
             @PathVariable Long id,
             @RequestBody Mascota mascotaDetails) {
-        try {
-            Mascota updatedMascota =
-                    mascotaService.update(id, mascotaDetails);
 
-            return ResponseEntity.ok(updatedMascota);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        Mascota updatedMascota =
+                mascotaService.update(id, mascotaDetails);
+
+        return ResponseEntity.ok(updatedMascota);
     }
 
     // Elimina una mascota.
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMascota(
             @PathVariable Long id) {
-        try {
-            mascotaService.delete(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        mascotaService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     // Sube o actualiza la fotografía de una mascota.

@@ -1,5 +1,7 @@
 package proyecto.mascotasvacunas.service;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import proyecto.mascotasvacunas.entity.Usuario;
 import proyecto.mascotasvacunas.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
@@ -30,7 +32,8 @@ public class UsuarioService {
 
     public Usuario update(Long id, Usuario usuarioDetails) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
                         "Usuario no encontrado con id: " + id));
 
         usuario.setNombre(usuarioDetails.getNombre());
@@ -42,7 +45,8 @@ public class UsuarioService {
 
     public void delete(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
                         "Usuario no encontrado con id: " + id));
 
         usuarioRepository.delete(usuario);

@@ -1,6 +1,7 @@
 package proyecto.mascotasvacunas.controller;
 
 
+import org.springframework.web.server.ResponseStatusException;
 import proyecto.mascotasvacunas.entity.Vacunacion;
 import proyecto.mascotasvacunas.service.VacunacionService;
 import proyecto.mascotasvacunas.service.FotoVacunacionService;
@@ -43,36 +44,23 @@ public class VacunacionController {
 
     // Obtiene todas las vacunaciones del usuario.
     @GetMapping
-    public List<Vacunacion> getAllVacunaciones() {
-        return vacunacionService.findAll();
+    public ResponseEntity<List<Vacunacion>> getAllVacunaciones() {
+        return ResponseEntity.ok(vacunacionService.findAll());
     }
 
     // Obtiene las vacunaciones de una mascota.
     @GetMapping("/mascota/{mascotaId}")
     public ResponseEntity<List<Vacunacion>> getVacunacionesByMascota(
             @PathVariable Long mascotaId) {
-
-        try {
-            return ResponseEntity.ok(
-                    vacunacionService.findByMascota(mascotaId)
-            );
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(
+                vacunacionService.findByMascota(mascotaId));
     }
 
-    // Busca una vacunación por su ID.
+    // Obtiene una vacunación por su ID.
     @GetMapping("/{id}")
     public ResponseEntity<Vacunacion> getVacunacionById(
             @PathVariable Long id) {
-
-        try {
-            Vacunacion vacunacion = vacunacionService.findById(id);
-            return ResponseEntity.ok(vacunacion);
-
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(vacunacionService.findById(id));
     }
 
     // Crea una vacunación asociada a una mascota.
@@ -81,28 +69,18 @@ public class VacunacionController {
             @PathVariable Long mascotaId,
             @RequestBody Vacunacion vacunacion) {
 
-        try {
-            return ResponseEntity.ok(
-                    vacunacionService.crear(mascotaId, vacunacion)
-            );
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(
+                vacunacionService.crear(mascotaId, vacunacion));
     }
 
     // Actualiza una vacunación.
     @PutMapping("/{id}")
     public ResponseEntity<Vacunacion> updateVacunacion(
             @PathVariable Long id,
-            @RequestBody Vacunacion vacunacion) {
+            @RequestBody Vacunacion vacunacionDetails) {
 
-        try {
-            return ResponseEntity.ok(
-                    vacunacionService.update(id, vacunacion)
-            );
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(
+                vacunacionService.update(id, vacunacionDetails));
     }
 
     // Elimina una vacunación.
@@ -110,98 +88,87 @@ public class VacunacionController {
     public ResponseEntity<Void> deleteVacunacion(
             @PathVariable Long id) {
 
-        try {
-            vacunacionService.delete(id);
-            return ResponseEntity.noContent().build();
-
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        vacunacionService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
-    // Sube la fotografía de la etiqueta de una vacunación.
-    @PostMapping(
-            value = "/{id}/foto-etiqueta",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
-    public ResponseEntity<Void> subirFotoEtiqueta(
+    // Subir la fotografía de la etiqueta de una vacunación.
+    @PostMapping("/{id}/foto-etiqueta")
+    public ResponseEntity<Vacunacion> subirFotoEtiqueta(
             @PathVariable Long id,
             @RequestParam("archivo") MultipartFile archivo) {
 
         try {
-            // Comprueba que la vacunación pertenece al usuario autenticado.
+            // Comprobar que la vacunación existe y pertenece al usuario.
             vacunacionService.findById(id);
 
+            // Guardar la fotografía.
             String nombreFoto = fotoVacunacionService.guardarFoto(archivo);
 
-            vacunacionService.actualizarFotoEtiqueta(id, nombreFoto);
+            // Actualizar la vacunación con el nombre de la fotografía.
+            Vacunacion vacunacion =
+                    vacunacionService.actualizarFotoEtiqueta(id, nombreFoto);
 
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(vacunacion);
 
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, e.getMessage(), e);
 
         } catch (IOException e) {
-            return ResponseEntity.status(
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            ).build();
-
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "No se ha podido guardar la fotografía.", e);
         }
     }
 
-    // Consulta la fotografía de la etiqueta de una vacunación.
+    // Obtener la fotografía de la etiqueta de una vacunación.
     @GetMapping("/{id}/foto-etiqueta")
     public ResponseEntity<Resource> obtenerFotoEtiqueta(
             @PathVariable Long id) {
 
+        // Comprobar que la vacunación existe y pertenece al usuario.
+        Vacunacion vacunacion = vacunacionService.findById(id);
+
+        String nombreFoto = vacunacion.getFotoEtiqueta();
+
+        if (nombreFoto == null || nombreFoto.isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "La vacunación no tiene fotografía.");
+        }
+
         try {
-            // Comprueba que la vacunación pertenece al usuario autenticado.
-            Vacunacion vacunacion = vacunacionService.findById(id);
-
-            if (vacunacion.getFotoEtiqueta() == null
-                    || vacunacion.getFotoEtiqueta().isBlank()) {
-                return ResponseEntity.notFound().build();
-            }
-
             Path directorio = Paths.get(directorioFotos)
-                    .toAbsolutePath()
+                    .toAbsolutePath().normalize();
+
+            Path rutaFoto = directorio.resolve(nombreFoto)
                     .normalize();
 
-            Path ruta = directorio
-                    .resolve(vacunacion.getFotoEtiqueta())
-                    .normalize();
-
-            // Evita acceder a archivos fuera del directorio de fotografías.
-            if (!ruta.startsWith(directorio)) {
-                return ResponseEntity.badRequest().build();
+            // Evitar acceder a archivos fuera del directorio permitido.
+            if (!rutaFoto.startsWith(directorio)) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Ruta de fotografía no válida.");
             }
 
-            Resource recurso = new UrlResource(ruta.toUri());
-
-            if (!recurso.exists() || !recurso.isReadable()) {
-                return ResponseEntity.notFound().build();
+            if (!Files.isRegularFile(rutaFoto)
+                    || !Files.isReadable(rutaFoto)) {
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se ha encontrado la fotografía.");
             }
 
-            String tipoContenido = Files.probeContentType(ruta);
-
-            if (tipoContenido == null
-                    || !tipoContenido.startsWith("image/")) {
-                tipoContenido = MediaType.APPLICATION_OCTET_STREAM_VALUE;
-            }
+            Resource recurso = new UrlResource(rutaFoto.toUri());
 
             return ResponseEntity.ok()
-                    .header(
-                            HttpHeaders.CONTENT_DISPOSITION,
-                            "inline; filename=\""
-                                    + recurso.getFilename() + "\""
-                    )
-                    .contentType(MediaType.parseMediaType(tipoContenido))
+                    .contentType(MediaType.IMAGE_JPEG)
                     .body(recurso);
 
-        } catch (RuntimeException | IOException e) {
-            return ResponseEntity.notFound().build();
+        } catch (IOException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "No se ha podido leer la fotografía.", e);
         }
     }
 }
