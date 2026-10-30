@@ -164,3 +164,38 @@ He utilizado ChatGPT y Codex como herramientas de apoyo durante el desarrollo pa
 `Implementar la gestión de fotografías de etiquetas de vacunación`
 
 `Actualizar documentación del proyecto`
+
+## Día 7 — 30/10/2026 — Mejoras en seguridad y gestión de la API REST
+
+Durante esta fase he continuado adaptando la API REST original para mejorar la seguridad, la gestión de las cuentas de usuario y el tratamiento de errores.
+
+### Trabajo realizado
+
+- Implementación de `GlobalExceptionHandler` para centralizar la gestión de excepciones de la API REST.
+- Actualización del filtro `JwtAuthenticationFilter` para mejorar la validación de los tokens JWT.
+- Revisión de la configuración de seguridad mediante `SecurityConfig`.
+- Incorporación de un endpoint para consultar los datos de la cuenta del usuario autenticado.
+- Implementación de la funcionalidad para cambiar la contraseña de la cuenta.
+- Validación de la contraseña actual y de la nueva contraseña antes de realizar el cambio.
+- Adaptación de los controladores y servicios para mejorar la gestión de errores.
+- Revisión de los métodos de gestión de usuarios, mascotas, vacunas y vacunaciones.
+- Comprobación de que cada usuario pueda acceder únicamente a sus propios datos.
+- Realización de pruebas mediante Postman para comprobar el funcionamiento de las nuevas funcionalidades y la gestión de errores.
+
+### Uso de herramientas de IA
+
+He utilizado ChatGPT como herramienta de apoyo durante el desarrollo para resolver dudas técnicas, revisar los cambios realizados en la seguridad, analizar el tratamiento de excepciones y comprobar las modificaciones de los servicios y controladores.
+
+Las propuestas obtenidas se han revisado y probado durante el desarrollo antes de incorporarlas al proyecto.
+
+### Control de versiones
+
+He realizado los siguientes commits:
+
+`Mejorar la gestión de errores y seguridad`
+
+`Implementar gestión de cuenta y cambio de contraseña`
+
+`Mejorar la gestión de usuarios, mascotas, vacunas y vacunaciones`
+
+`Actualizar registro de desarrollo de la API REST`
