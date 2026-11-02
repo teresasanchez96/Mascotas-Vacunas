@@ -199,3 +199,29 @@ He realizado los siguientes commits:
 `Mejorar la gestión de usuarios, mascotas, vacunas y vacunaciones`
 
 `Actualizar registro de desarrollo de la API REST`
+
+## Día 8 — 02/11/2026 — Implementación de la eliminación de fotografías
+
+Durante esta fase he ampliado la API REST para permitir eliminar las fotografías de las mascotas y las fotografías de las etiquetas de vacunación, además de retirar sus referencias de la base de datos.
+
+### Trabajo realizado
+
+- Incorporación de un método en `FotoMascotaService` para eliminar del almacenamiento la fotografía asociada a una mascota.
+- Incorporación de un método en `FotoVacunacionService` para eliminar del almacenamiento la fotografía de una etiqueta de vacunación.
+- Adaptación de `MascotaService` para eliminar la referencia a la fotografía de la mascota en la base de datos y borrar el archivo correspondiente.
+- Adaptación de `VacunacionService` para eliminar la referencia a la fotografía de la etiqueta en la base de datos y borrar el archivo correspondiente.
+- Incorporación en `MascotaController` de un endpoint para solicitar la eliminación de la fotografía de una mascota.
+- Incorporación en `VacunacionController` de un endpoint para solicitar la eliminación de una fotografía de etiqueta de vacunación.
+- Inclusión de comprobaciones para evitar que la eliminación de archivos pueda acceder fuera de los directorios de almacenamiento establecidos.
+
+### Uso de herramientas de IA
+
+He utilizado ChatGPT como herramienta de apoyo durante el desarrollo para revisar los cambios realizados en los servicios y controladores, resolver dudas sobre la eliminación de archivos y comprobar que se actualizasen correctamente las referencias almacenadas en la base de datos.
+
+### Control de versiones
+
+He realizado el siguiente commit:
+
+`Gestionar la eliminación de fotos de mascotas y etiquetas de vacunación`
+
+`Actualizar registro de desarrollo de la API REST`
