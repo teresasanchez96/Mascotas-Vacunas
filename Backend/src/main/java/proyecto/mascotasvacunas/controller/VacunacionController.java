@@ -171,4 +171,14 @@ public class VacunacionController {
                     "No se ha podido leer la fotografía.", e);
         }
     }
+
+    // Elimina la fotografía de la etiqueta de una vacunación.
+    @DeleteMapping("/{id}/foto-etiqueta")
+    public ResponseEntity<Void> eliminarFotoEtiqueta(
+            @PathVariable Long id) {
+
+        vacunacionService.eliminarFotoEtiqueta(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

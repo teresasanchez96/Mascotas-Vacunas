@@ -86,9 +86,50 @@ public class MascotaService {
     public Mascota actualizarFotoMascota(Long id, String nombreFotoMascota) {
         Mascota mascota = findById(id);
 
+        String fotoAnterior = mascota.getFotoMascota();
+
         mascota.setFotoMascota(nombreFotoMascota);
 
-        return mascotaRepository.save(mascota);
+        Mascota mascotaActualizada =  mascotaRepository.save(mascota);
+
+        // Elimina la fotografía anterior si se ha guardado la nueva correctamente.
+        if (fotoAnterior != null
+                && !fotoAnterior.isBlank()
+                && !fotoAnterior.equals(nombreFotoMascota)) {
+
+            try {
+                fotoMascotaService.eliminarFoto(fotoAnterior);
+            } catch (IOException e) {
+                System.err.println(
+                        "No se ha podido eliminar la fotografía anterior: "
+                                + e.getMessage());
+            }
+        }
+
+        return mascotaActualizada;
+    }
+
+    // Elimina la fotografía de una mascota sin eliminar la mascota.
+    public void eliminarFotoMascota(Long id) {
+        Mascota mascota = findById(id);
+
+        String foto = mascota.getFotoMascota();
+
+        if (foto == null || foto.isBlank()) {
+            return;
+        }
+
+        mascota.setFotoMascota(null);
+
+        mascotaRepository.save(mascota);
+
+        try {
+            fotoMascotaService.eliminarFoto(foto);
+        } catch (IOException e) {
+            System.err.println(
+                    "No se ha podido eliminar la fotografía: "
+                            + e.getMessage());
+        }
     }
 
     // Elimina una mascota perteneciente al usuario y su fotografía, si tiene una.

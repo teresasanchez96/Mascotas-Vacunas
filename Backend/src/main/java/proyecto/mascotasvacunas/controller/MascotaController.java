@@ -166,4 +166,14 @@ public class MascotaController {
                     e);
         }
     }
+
+    // Elimina la fotografía de una mascota.
+    @DeleteMapping("/{id}/foto")
+    public ResponseEntity<Void> eliminarFoto(
+            @PathVariable Long id) {
+
+        mascotaService.eliminarFotoMascota(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

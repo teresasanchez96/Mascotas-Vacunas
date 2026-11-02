@@ -14,6 +14,7 @@ import proyecto.mascotasvacunas.repository.UsuarioRepository;
 import proyecto.mascotasvacunas.repository.VacunaRepository;
 import proyecto.mascotasvacunas.repository.VacunacionRepository;
 
+import java.io.IOException;
 import java.util.List;
 
 /*
@@ -26,15 +27,18 @@ public class VacunacionService {
     private final UsuarioRepository usuarioRepository;
     private final MascotaRepository mascotaRepository;
     private final VacunaRepository vacunaRepository;
+    private final FotoVacunacionService fotoVacunacionService;
 
     public VacunacionService(VacunacionRepository vacunacionRepository,
                              UsuarioRepository usuarioRepository,
                              MascotaRepository mascotaRepository,
-                             VacunaRepository vacunaRepository) {
+                             VacunaRepository vacunaRepository,
+                             FotoVacunacionService fotoVacunacionService){
         this.vacunacionRepository = vacunacionRepository;
         this.usuarioRepository = usuarioRepository;
         this.mascotaRepository = mascotaRepository;
         this.vacunaRepository = vacunaRepository;
+        this.fotoVacunacionService = fotoVacunacionService;
     }
 
     // Obtiene las vacunaciones de las mascotas del usuario que ha iniciado sesión.
@@ -104,12 +108,22 @@ public class VacunacionService {
     }
 
 
-    // Elimina una vacunación perteneciente al usuario.
+    // Elimina una vacunación perteneciente al usuario y su fotografía.
     public void delete(Long id) {
-
         Vacunacion vacunacion = findById(id);
+        String foto = vacunacion.getFotoEtiqueta();
 
         vacunacionRepository.delete(vacunacion);
+
+        if (foto != null && !foto.isBlank()) {
+            try {
+                fotoVacunacionService.eliminarFoto(foto);
+            } catch (IOException e) {
+                System.err.println(
+                        "No se ha podido eliminar la fotografía de la etiqueta: "
+                                + e.getMessage());
+            }
+        }
     }
 
     // Crea una vacunación comprobando que la mascota pertenece al usuario.
@@ -223,10 +237,54 @@ public class VacunacionService {
                         "Usuario no encontrado"));
     }
 
-    // Actualiza la fotografía de la etiqueta de una vacunación.
+    // Actualiza la fotografía de la etiqueta y elimina la anterior.
     public Vacunacion actualizarFotoEtiqueta(Long id, String nombreFoto) {
         Vacunacion vacunacion = findById(id);
+
+        String fotoAnterior = vacunacion.getFotoEtiqueta();
+
         vacunacion.setFotoEtiqueta(nombreFoto);
-        return vacunacionRepository.save(vacunacion);
+
+        Vacunacion vacunacionActualizada =
+                vacunacionRepository.save(vacunacion);
+
+        // Elimina la fotografía anterior si se ha guardado la nueva correctamente.
+        if (fotoAnterior != null
+                && !fotoAnterior.isBlank()
+                && !fotoAnterior.equals(nombreFoto)) {
+
+            try {
+                fotoVacunacionService.eliminarFoto(fotoAnterior);
+            } catch (IOException e) {
+                System.err.println(
+                        "No se ha podido eliminar la fotografía anterior de la etiqueta: "
+                                + e.getMessage());
+            }
+        }
+
+        return vacunacionActualizada;
+    }
+
+    // Elimina la fotografía de la etiqueta sin eliminar la vacunación.
+    public void eliminarFotoEtiqueta(Long id) {
+        Vacunacion vacunacion = findById(id);
+
+        String foto = vacunacion.getFotoEtiqueta();
+
+        if (foto == null || foto.isBlank()) {
+            return;
+        }
+
+        vacunacion.setFotoEtiqueta(null);
+
+        vacunacionRepository.save(vacunacion);
+
+        try {
+            fotoVacunacionService.eliminarFoto(foto);
+        } catch (IOException e) {
+            System.err.println(
+                    "No se ha podido eliminar la fotografía de la etiqueta: "
+                            + e.getMessage());
+        }
     }
 }

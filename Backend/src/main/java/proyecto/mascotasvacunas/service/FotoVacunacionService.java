@@ -57,6 +57,29 @@ public class FotoVacunacionService {
         return nombreArchivo;
     }
 
+    // Elimina una fotografía guardada en el directorio de vacunaciones.
+    public void eliminarFoto(String nombreArchivo) throws IOException {
+
+        if (nombreArchivo == null || nombreArchivo.isBlank()) {
+            return;
+        }
+
+        Path directorio = Paths.get(directorioFotos)
+                .toAbsolutePath()
+                .normalize();
+
+        Path archivo = directorio.resolve(nombreArchivo)
+                .normalize();
+
+        // Comprueba que el archivo está dentro del directorio permitido.
+        if (!archivo.startsWith(directorio)) {
+            throw new IllegalArgumentException(
+                    "Ruta de archivo no válida");
+        }
+
+        Files.deleteIfExists(archivo);
+    }
+
     // Obtiene la extensión correspondiente al formato de imagen.
     private String obtenerExtension(String tipoContenido) {
 
