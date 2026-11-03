@@ -59,4 +59,11 @@ class MascotaRepository @Inject constructor(
     ): Response<ResponseBody> {
         return mascotaClient.obtenerFotoMascota(id)
     }
+
+    // Eliminar la fotografía de una mascota.
+    suspend fun eliminarFotoMascota(
+        id: Long
+    ): Response<Unit> {
+        return mascotaClient.eliminarFotoMascota(id)
+    }
 }

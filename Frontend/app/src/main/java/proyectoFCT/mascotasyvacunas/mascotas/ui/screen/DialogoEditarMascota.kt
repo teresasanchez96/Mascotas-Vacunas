@@ -1,6 +1,7 @@
 package proyectoFCT.mascotasyvacunas.mascotas.ui.screen
 
 import android.app.DatePickerDialog
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -27,6 +28,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -38,9 +41,11 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -54,6 +59,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -67,8 +73,9 @@ import java.util.Locale
 fun DialogoEditarMascota(
     mascota: Mascota,
     onDismiss: () -> Unit,
-    onGuardar: (Mascota, Uri?) -> Unit
-) {
+    onGuardar: (Mascota, Uri?, Boolean) -> Unit,
+    fotoActual: Bitmap?
+){
 
     var nombre by remember(mascota.id) {
         mutableStateOf(mascota.nombre)
@@ -121,11 +128,20 @@ fun DialogoEditarMascota(
 
     val context = LocalContext.current
     var fotoSeleccionada by remember(mascota.id) { mutableStateOf<Uri?>(null) }
+    var quitarFoto by remember(mascota.id) {
+        mutableStateOf(false)
+    }
+    var mostrarConfirmacionEliminar by remember(mascota.id) {
+        mutableStateOf(false)
+    }
 
     val selectorFoto = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         fotoSeleccionada = uri
+        if (uri != null) {
+            quitarFoto = false
+        }
     }
 
     val bitmapSeleccionado = remember(fotoSeleccionada) {
@@ -171,7 +187,7 @@ fun DialogoEditarMascota(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(22.dp)
+                    .padding(horizontal = 18.dp, vertical = 14.dp)
             ) {
 
                 // Cabecera del diálogo.
@@ -226,69 +242,147 @@ fun DialogoEditarMascota(
                 }
 
                 Spacer(
-                    modifier = Modifier.height(20.dp)
+                    modifier = Modifier.height(8.dp)
                 )
 
                 // Campos del formulario.
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 430.dp)
+                        .heightIn(max = 500.dp)
                         .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
 
                     // Fotografía de la mascota.
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 0.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
-                        if (bitmapSeleccionado != null) {
+                        val fotoMostrada = bitmapSeleccionado
+                            ?: if (!quitarFoto) fotoActual else null
+
+                        if (fotoMostrada != null) {
                             Image(
-                                bitmap = bitmapSeleccionado.asImageBitmap(),
-                                contentDescription = "Nueva fotografía de ${mascota.nombre}",
-                                contentScale = ContentScale.Fit,
+                                bitmap = fotoMostrada.asImageBitmap(),
+                                contentDescription = "Fotografía de ${mascota.nombre}",
+                                contentScale = ContentScale.Crop,
                                 modifier = Modifier
-                                    .size(120.dp)
+                                    .size(80.dp)
                                     .clip(RoundedCornerShape(12.dp))
                             )
                         } else {
-                            Text(
-                                text = "Puedes cambiar la fotografía de esta mascota",
-                                color = Color(0xFF6F6680),
-                                fontSize = 13.sp
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color(0xFFEDE1FF)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.AddAPhoto,
+                                    contentDescription = "Sin fotografía",
+                                    tint = Purple40,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
                         }
 
-                        Button(
-                            onClick = { selectorFoto.launch("image/*") },
-                            shape = RoundedCornerShape(20.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFFEDE1FF),
-                                contentColor = Purple40
-                            )
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(0.dp)
                         ) {
+
+                            Button(
+                                onClick = {
+                                    selectorFoto.launch("image/*")
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(40.dp),
+                                shape = RoundedCornerShape(20.dp),
+                                contentPadding = PaddingValues(
+                                    horizontal = 8.dp,
+                                    vertical = 4.dp
+                                ),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFFEDE1FF),
+                                    contentColor = Purple40
+                                )
+                            ) {
                             Icon(
                                 imageVector = Icons.Default.AddAPhoto,
                                 contentDescription = null,
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier.size(17.dp)
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Spacer(modifier = Modifier.width(6.dp))
+
                             Text(
-                                text = if (fotoSeleccionada == null) {
-                                    "Cambiar fotografía"
+                                text = if (fotoMostrada == null) {
+                                    "Añadir fotografía"
                                 } else {
-                                    "Elegir otra fotografía"
+                                    "Cambiar fotografía"
                                 },
-                                fontSize = 13.sp
+                                fontSize = 12.sp,
+                                maxLines = 1
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        if (fotoActual != null && !quitarFoto) {
+                            OutlinedButton(
+                                onClick = {
+                                    mostrarConfirmacionEliminar = true
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(40.dp),
+                                shape = RoundedCornerShape(20.dp),
+                                border = androidx.compose.foundation.BorderStroke(
+                                    1.dp,
+                                    Color(0xFFD65368)
+                                ),
+                                contentPadding = PaddingValues(
+                                    horizontal = 8.dp,
+                                    vertical = 4.dp
+                                ),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = Color(0xFFD65368)
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = null,
+                                    tint = Color(0xFFD65368),
+                                    modifier = Modifier.size(17.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(6.dp))
+
+                                Text(
+                                    text = "Quitar fotografía",
+                                    color = Color(0xFFD65368),
+                                    fontSize = 12.sp,
+                                    maxLines = 1
+                                )
+                            }
+                        } else if (quitarFoto) {
+                            Text(
+                                text = "Se mostrará la ilustración de su especie",
+                                color = Color(0xFF6F6680),
+                                fontSize = 11.sp
                             )
                         }
                     }
+                }
 
-                    Spacer(modifier = Modifier.height(4.dp))
 
-                    // Nombre.
+                // Nombre.
                     OutlinedTextField(
                         value = nombre,
                         onValueChange = {
@@ -505,7 +599,7 @@ fun DialogoEditarMascota(
                 }
 
                 Spacer(
-                    modifier = Modifier.height(20.dp)
+                    modifier = Modifier.height(10.dp)
                 )
 
                 // Botones.
@@ -560,7 +654,8 @@ fun DialogoEditarMascota(
                                         },
                                         vacunas = mascota.vacunas
                                     ),
-                                    fotoSeleccionada
+                                    fotoSeleccionada,
+                                    quitarFoto
                                 )
                             } else {
                                 mostrarError = true
@@ -591,4 +686,84 @@ fun DialogoEditarMascota(
             }
         }
     }
+
+    // Confirmación para quitar la fotografía actual.
+    if (mostrarConfirmacionEliminar) {
+        AlertDialog(
+            onDismissRequest = {
+                mostrarConfirmacionEliminar = false
+            },
+
+            icon = {
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(
+                            color = Color(0xFFFCE7EB),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Quitar fotografía",
+                        tint = Color(0xFFC45C6C),
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+            },
+
+            title = {
+                Text(
+                    text = "¿Quitar fotografía?",
+                    color = Purple40,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+            },
+
+            text = {
+                Text(
+                    text = "¿Está seguro de que desea quitar la fotografía de esta mascota? Se mostrará la ilustración de su especie.",
+                    color = Color(0xFF5F5965),
+                    textAlign = TextAlign.Center
+                )
+            },
+
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        quitarFoto = true
+                        fotoSeleccionada = null
+                        mostrarConfirmacionEliminar = false
+                    }
+                ) {
+                    Text(
+                        text = "Quitar",
+                        color = Color(0xFFC45C6C),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            },
+
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        mostrarConfirmacionEliminar = false
+                    }
+                ) {
+                    Text(
+                        text = "Cancelar",
+                        color = Purple40,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            },
+
+            containerColor = Color(0xFFF8F3FF),
+            shape = RoundedCornerShape(24.dp)
+        )
+    }
+
 }
+

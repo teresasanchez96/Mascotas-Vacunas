@@ -51,4 +51,10 @@ interface MascotaClient {
     suspend fun obtenerFotoMascota(
         @Path("id") id: Long
     ): Response<ResponseBody>
+
+    // Eliminar la fotografía de una mascota.
+    @DELETE("/api/mascotas/{id}/foto")
+    suspend fun eliminarFotoMascota(
+        @Path("id") id: Long
+    ): Response<Unit>
 }

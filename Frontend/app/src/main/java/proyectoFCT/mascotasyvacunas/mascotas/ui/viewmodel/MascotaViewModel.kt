@@ -186,11 +186,26 @@ class MascotaViewModel @Inject constructor(
                 }
 
                 if (bitmap != null) {
+                    // Actualizar la fotografía en memoria.
                     _fotosMascotas.value += (id to bitmap)
+                } else {
+                    // Si no hay fotografía, eliminar la anterior.
+                    _fotosMascotas.value -= id
                 }
+            } else {
+                // Si el servidor indica que no existe fotografía,
+                // eliminar la imagen anterior de la memoria.
+                _fotosMascotas.value -= id
             }
-        } catch (_: Exception) {
-            // Si falla la descarga, se conserva la foto anterior.
+
+            _fotosMascotasCargadas.value += id
+
+        } catch (e: Exception) {
+            android.util.Log.e(
+                "FotoMascota",
+                "Error al recargar la fotografía",
+                e
+            )
         }
     }
 
@@ -385,6 +400,44 @@ class MascotaViewModel @Inject constructor(
         }
 
         return true
+    }
+
+    // Eliminar la fotografía de una mascota sin eliminar la mascota.
+    fun eliminarFotoMascota(
+        id: Long,
+        onFotoActualizada: (() -> Unit)? = null
+    ) {
+        viewModelScope.launch {
+            try {
+                val respuesta = withContext(Dispatchers.IO) {
+                    mascotaRepository.eliminarFotoMascota(id)
+                }
+
+                if (respuesta.isSuccessful) {
+                    // Eliminar la fotografía de la caché.
+                    _fotosMascotas.value -= id
+
+                    // Marcar que ya se ha consultado la fotografía.
+                    _fotosMascotasCargadas.value += id
+
+                    onFotoActualizada?.invoke()
+
+                    _showSuccessDialog.value = true
+                } else {
+                    _message.value =
+                        "Error al eliminar la fotografía: HTTP ${respuesta.code()}"
+                }
+            } catch (e: Exception) {
+                android.util.Log.e(
+                    "FotoMascota",
+                    "Error al eliminar la fotografía",
+                    e
+                )
+
+                _message.value =
+                    "Error al eliminar la fotografía: ${e.message}"
+            }
+        }
     }
 
     // Eliminar una mascota y quitar su fotografía de la memoria.
