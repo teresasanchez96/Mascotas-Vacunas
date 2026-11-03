@@ -192,7 +192,7 @@ fun PantallaListaMascotas(
 
     MyDialog(
         show = showDialog,
-        description = "¿Está seguro de que desea eliminar la mascota?",
+        description = "¿Está seguro de que desea eliminar esta mascota? Esta acción no se puede deshacer.",
         onDismiss = {
             mascotaViewModel.changeShowDialog()
         },
@@ -431,7 +431,8 @@ fun MyDialog(
                 ) {
                     Text(
                         text = "Cancelar",
-                        color = Purple40
+                        color = Purple40,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             },
