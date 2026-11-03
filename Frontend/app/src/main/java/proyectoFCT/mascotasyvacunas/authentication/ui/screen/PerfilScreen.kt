@@ -146,6 +146,7 @@ fun PantallaPerfil(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
                 .padding(
                     horizontal = 20.dp,
                     vertical = 18.dp
