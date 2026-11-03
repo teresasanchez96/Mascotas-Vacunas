@@ -2,6 +2,7 @@ package proyectoFCT.mascotasyvacunas.mascotas.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import proyectoFCT.mascotasyvacunas.R
@@ -97,6 +99,10 @@ fun PantallaDetalleMascota(
     }
 
     var mostrarMenu by remember {
+        mutableStateOf(false)
+    }
+
+    var mostrarFotoAmpliada by remember {
         mutableStateOf(false)
     }
 
@@ -292,6 +298,9 @@ fun PantallaDetalleMascota(
                                 modifier = Modifier
                                     .size(145.dp)
                                     .clip(CircleShape)
+                                    .clickable {
+                                        mostrarFotoAmpliada = true
+                                    }
                             )
                         }
 
@@ -307,7 +316,11 @@ fun PantallaDetalleMascota(
                                 painter = painterResource(id = imagenMascota),
                                 contentDescription = mascota.nombre,
                                 contentScale = ContentScale.Fit,
-                                modifier = Modifier.size(125.dp)
+                                modifier = Modifier
+                                    .size(125.dp)
+                                    .clickable {
+                                        mostrarFotoAmpliada = true
+                                    }
                             )
                         }
                     }
@@ -499,26 +512,115 @@ fun PantallaDetalleMascota(
             }
         }
     }
+    // Diálogo para ampliar la fotografía o ilustración de la mascota.
+    if (mostrarFotoAmpliada && mascota != null) {
+        Dialog(
+            onDismissRequest = {
+                mostrarFotoAmpliada = false
+            }
+        ) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFF8F3FF)
+                ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 6.dp
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = mascota.nombre,
+                        color = Purple40,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    if (fotosMascotas[mascotaId] != null) {
+                        Image(
+                            bitmap = fotosMascotas[mascotaId]!!.asImageBitmap(),
+                            contentDescription = "Fotografía ampliada de ${mascota.nombre}",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(300.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = when (mascota.especie.lowercase()) {
+                                "perro" -> R.drawable.perro
+                                "gato" -> R.drawable.gato
+                                "conejo" -> R.drawable.conejo
+                                "hurón", "huron" -> R.drawable.huron
+                                else -> R.drawable.otramascota
+                            }),
+                            contentDescription = "Ilustración ampliada de ${mascota.nombre}",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(300.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    TextButton(
+                        onClick = {
+                            mostrarFotoAmpliada = false
+                        }
+                    ) {
+                        Text(
+                            text = "Cerrar",
+                            color = Purple40,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+        }
+    }
 
     // Diálogo para editar la mascota.
     if (mostrarDialogoEditar && mascota != null) {
         DialogoEditarMascota(
             mascota = mascota,
+            fotoActual = fotosMascotas[mascotaId],
             onDismiss = {
                 mostrarDialogoEditar = false
             },
-            onGuardar = { mascotaEditada, fotoUri ->
-                mascotaViewModel.updateMascota(
-                    id = mascotaId,
-                    mascota = mascotaEditada,
-                    context = context,
-                    fotoUri = fotoUri,
-                    onFotoActualizada = {
-                        navController.previousBackStackEntry
-                            ?.savedStateHandle
-                            ?.set("foto_actualizada_id", mascotaId)
-                    }
-                )
+            onGuardar = { mascotaEditada, fotoUri, quitarFoto ->
+
+                if (quitarFoto) {
+                    mascotaViewModel.eliminarFotoMascota(
+                        id = mascotaId,
+                        onFotoActualizada = {
+                            navController.previousBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("foto_actualizada_id", mascotaId)
+                        }
+                    )
+                } else {
+                    mascotaViewModel.updateMascota(
+                        id = mascotaId,
+                        mascota = mascotaEditada,
+                        context = context,
+                        fotoUri = fotoUri,
+                        onFotoActualizada = {
+                            navController.previousBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("foto_actualizada_id", mascotaId)
+                        }
+                    )
+                }
 
                 mostrarDialogoEditar = false
             }
