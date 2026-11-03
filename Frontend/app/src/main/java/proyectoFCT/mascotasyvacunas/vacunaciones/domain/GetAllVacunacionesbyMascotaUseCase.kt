@@ -1,5 +1,7 @@
 package proyectoFCT.mascotasyvacunas.vacunaciones.domain
 
+import proyectoFCT.mascotasyvacunas.vacunaciones.data.network.VacunacionRepository
+import proyectoFCT.mascotasyvacunas.vacunaciones.data.network.VacunacionResponse
 import javax.inject.Inject
 
 class GetAllVacunacionesbyMascotaUseCase @Inject constructor(
