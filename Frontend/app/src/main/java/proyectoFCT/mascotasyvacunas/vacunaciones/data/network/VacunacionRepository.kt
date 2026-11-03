@@ -62,4 +62,12 @@ class VacunacionRepository @Inject constructor(
     ): Response<ResponseBody> {
         return vacunacionClient.obtenerFotoEtiqueta(id)
     }
+
+    // Elimina la fotografía de la etiqueta de una vacunación.
+    suspend fun eliminarFotoEtiqueta(
+        id: Long
+    ): Response<Unit> {
+        return vacunacionClient.eliminarFotoEtiqueta(id)
+    }
+
 }

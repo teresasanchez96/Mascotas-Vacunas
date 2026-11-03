@@ -37,13 +37,11 @@ class VacunacionViewModel @Inject constructor(
     val vacunaciones = _vacunaciones.asStateFlow()
 
     private val _message = MutableStateFlow<String?>(null)
-    val message = _message.asStateFlow()
 
     private val _fotosEtiquetas = MutableStateFlow<Map<Long, Bitmap>>(emptyMap())
     val fotosEtiquetas = _fotosEtiquetas.asStateFlow()
 
     private val _fotosEtiquetasCargadas = MutableStateFlow<Set<Long>>(emptySet())
-    val fotosEtiquetasCargadas = _fotosEtiquetasCargadas.asStateFlow()
 
     private val fotosCargando = mutableSetOf<Long>()
 
@@ -200,6 +198,40 @@ class VacunacionViewModel @Inject constructor(
         }
     }
 
+    // Elimina la fotografía de la etiqueta de una vacunación.
+    fun eliminarFotoEtiqueta(mascotaId: Long, vacunacionId: Long) {
+        viewModelScope.launch {
+            try {
+                val respuesta = withContext(Dispatchers.IO) {
+                    vacunacionRepository.eliminarFotoEtiqueta(vacunacionId)
+                }
+
+                if (respuesta.isSuccessful) {
+                    // Elimina la fotografía de la caché.
+                    _fotosEtiquetas.value -= vacunacionId
+
+                    // Marca la foto como cargada para evitar intentar descargarla de nuevo.
+                    _fotosEtiquetasCargadas.value += vacunacionId
+
+                    cargarVacunaciones(mascotaId)
+
+                    _message.value = "Fotografía eliminada correctamente"
+                } else {
+                    _message.value =
+                        "Error al eliminar la fotografía: HTTP ${respuesta.code()}"
+                }
+            } catch (e: Exception) {
+                android.util.Log.e(
+                    "FotoVacunacion",
+                    "Error al eliminar la fotografía",
+                    e
+                )
+
+                _message.value =
+                    "Error al eliminar la fotografía: ${e.message}"
+            }
+        }
+    }
 
     // Carga la fotografía de la etiqueta de una vacunación si todavía no se ha cargado.
     fun cargarFotoEtiqueta(vacunacionId: Long) {

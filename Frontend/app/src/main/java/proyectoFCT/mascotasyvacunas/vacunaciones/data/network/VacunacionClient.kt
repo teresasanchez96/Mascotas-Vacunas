@@ -55,4 +55,10 @@ interface VacunacionClient {
     suspend fun obtenerFotoEtiqueta(
         @Path("id") id: Long
     ): Response<ResponseBody>
+
+    // Elimina la fotografía de la etiqueta de una vacunación.
+    @DELETE("/api/vacunaciones/{id}/foto-etiqueta")
+    suspend fun eliminarFotoEtiqueta(
+        @Path("id") id: Long
+    ): Response<Unit>
 }

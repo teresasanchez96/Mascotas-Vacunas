@@ -632,6 +632,10 @@ private fun TarjetaVacunacion(
         mutableStateOf(false)
     }
 
+    var mostrarDialogoEliminarFoto by remember {
+        mutableStateOf(false)
+    }
+
     val selectorImagen = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
@@ -859,6 +863,12 @@ private fun TarjetaVacunacion(
 
                 Spacer(modifier = Modifier.height(2.dp))
 
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                 TextButton(
                     onClick = {
                         selectorImagen.launch("image/*")
@@ -879,10 +889,29 @@ private fun TarjetaVacunacion(
                         fontWeight = FontWeight.SemiBold
                     )
                 }
+                    if (
+                        fotoEtiqueta != null ||
+                        !vacunacion.fotoEtiqueta.isNullOrBlank()
+                    ) {
+                        TextButton(
+                            onClick = {
+                                mostrarDialogoEliminarFoto = true
+                            },
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Text(
+                                text = "Eliminar etiqueta",
+                                color = Color(0xFFD65368),
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+                }
             }
         }
 
     }
+
 
     // Diálogo para consultar la etiqueta completa al pulsar su imagen.
     if (vacunacion.vacunaAdministrada && mostrarFotoEtiquetaAmpliada && fotoEtiqueta != null) {
@@ -934,7 +963,111 @@ private fun TarjetaVacunacion(
             }
         }
     }
+
+    // Diálogo para confirmar la eliminación de la fotografía de la etiqueta.
+    if (mostrarDialogoEliminarFoto) {
+        Dialog(
+            onDismissRequest = {
+                mostrarDialogoEliminarFoto = false
+            },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth(0.82f)
+                    .widthIn(max = 360.dp),
+                shape = RoundedCornerShape(30.dp),
+                color = Color(0xFFF7F2FF),
+                shadowElevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(68.dp)
+                            .background(
+                                color = Color(0xFFFCE7EA),
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = "Eliminar etiqueta",
+                            tint = Color(0xFFC65A70),
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "¿Eliminar etiqueta?",
+                        fontSize = 22.sp,
+                        color = Color(0xFF6B50A0),
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "¿Está seguro de que desea eliminar la fotografía de esta etiqueta? La vacunación seguirá registrada.",
+                        fontSize = 16.sp,
+                        color = Color(0xFF625D69),
+                        textAlign = TextAlign.Center,
+                        lineHeight = 21.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TextButton(
+                            onClick = {
+                                mostrarDialogoEliminarFoto = false
+                            }
+                        ) {
+                            Text(
+                                text = "Cancelar",
+                                color = Color(0xFF6B50A0),
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        TextButton(
+                            onClick = {
+                                vacunacion.id?.let { id ->
+                                    vacunacionViewModel.eliminarFotoEtiqueta(
+                                        mascotaId = mascotaId,
+                                        vacunacionId = id
+                                    )
+                                }
+                                mostrarDialogoEliminarFoto = false
+                            }
+                        ) {
+                            Text(
+                                text = "Eliminar",
+                                color = Color(0xFFD65368),
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
+
 
 /**
  * Calcula la edad a partir de la fecha de nacimiento.
