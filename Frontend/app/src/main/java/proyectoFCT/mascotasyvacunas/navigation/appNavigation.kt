@@ -1,5 +1,10 @@
 package proyectoFCT.mascotasyvacunas.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -16,7 +21,7 @@ import proyectoFCT.mascotasyvacunas.mascotas.ui.screen.PantallaNuevaMascota
 import proyectoFCT.mascotasyvacunas.vacunaciones.ui.screen.PantallaVacunacionesMascota
 import proyectoFCT.mascotasyvacunas.vacunas.ui.screen.PantallaListaVacunas
 
-// Gestiona la navegación entre las diferentes pantallas de la aplicación.
+// Gestiona la navegación y las transiciones entre las diferentes pantallas de la aplicación.
 @Composable
 fun AppNavigation() {
 
@@ -26,7 +31,39 @@ fun AppNavigation() {
         navController = navController,
 
         // Pantalla que se muestra al iniciar la aplicación.
-        startDestination = Home
+        startDestination = Home,
+        enterTransition = {
+            fadeIn(
+                animationSpec = tween(400)
+            ) + scaleIn(
+                initialScale = 0.95f,
+                animationSpec = tween(400)
+            )
+        },
+        exitTransition = {
+            fadeOut(
+                animationSpec = tween(300)
+            ) + scaleOut(
+                targetScale = 1.02f,
+                animationSpec = tween(300)
+            )
+        },
+        popEnterTransition = {
+            fadeIn(
+                animationSpec = tween(400)
+            ) + scaleIn(
+                initialScale = 0.95f,
+                animationSpec = tween(400)
+            )
+        },
+        popExitTransition = {
+            fadeOut(
+                animationSpec = tween(300)
+            ) + scaleOut(
+                targetScale = 1.02f,
+                animationSpec = tween(300)
+            )
+        }
     ) {
 
         // Pantalla de bienvenida.
