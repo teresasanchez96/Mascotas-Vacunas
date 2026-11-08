@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import proyectoFCT.mascotasyvacunas.R
+import proyectoFCT.mascotasyvacunas.ui.theme.dimensionAdaptada
 import proyectoFCT.mascotasyvacunas.vacunaciones.ui.model.Vacunacion
 import proyectoFCT.mascotasyvacunas.vacunas.ui.model.Vacuna
 import java.util.Calendar
@@ -116,7 +117,12 @@ fun FormularioVacunacion(
             modifier = Modifier
                 .fillMaxWidth(0.92f)
                 .widthIn(max = 480.dp)
-                .heightIn(max = 760.dp),
+                .heightIn(
+                    max = dimensionAdaptada(
+                        compacta = 650.dp,
+                        normal = 760.dp
+                    )
+                ),
             shape = RoundedCornerShape(30.dp),
             color = FondoVacunacion,
             shadowElevation = 8.dp
@@ -125,8 +131,14 @@ fun FormularioVacunacion(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        horizontal = 20.dp,
-                        vertical = 22.dp
+                        horizontal = dimensionAdaptada(
+                            compacta = 14.dp,
+                            normal = 20.dp
+                        ),
+                        vertical = dimensionAdaptada(
+                            compacta = 12.dp,
+                            normal = 22.dp
+                        )
                     )
             ) {
 
@@ -134,7 +146,12 @@ fun FormularioVacunacion(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(min = 110.dp),
+                        .heightIn(
+                            min = dimensionAdaptada(
+                                compacta = 85.dp,
+                                normal = 110.dp
+                            )
+                        ),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
@@ -180,14 +197,31 @@ fun FormularioVacunacion(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(
+                    modifier = Modifier.height(
+                        dimensionAdaptada(
+                            compacta = 10.dp,
+                            normal = 16.dp
+                        )
+                    )
+                )
 
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 430.dp)
+                        .heightIn(
+                            max = dimensionAdaptada(
+                                compacta = 390.dp,
+                                normal = 430.dp
+                            )
+                        )
                         .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    verticalArrangement = Arrangement.spacedBy(
+                        dimensionAdaptada(
+                            compacta = 7.dp,
+                            normal = 10.dp
+                        )
+                    )
                 ) {
 
                     // Selector de vacuna.
@@ -289,14 +323,25 @@ fun FormularioVacunacion(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(
-                                    horizontal = 12.dp,
-                                    vertical = 12.dp
+                                    horizontal = dimensionAdaptada(
+                                        compacta = 8.dp,
+                                        normal = 12.dp
+                                    ),
+                                    vertical = dimensionAdaptada(
+                                        compacta = 8.dp,
+                                        normal = 12.dp
+                                    )
                                 ),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             Surface(
-                                modifier = Modifier.size(48.dp),
+                                modifier = Modifier.size(
+                                    dimensionAdaptada(
+                                        compacta = 40.dp,
+                                        normal = 48.dp
+                                    )
+                                ),
                                 shape = CircleShape,
                                 color = Color.White
                             ) {
@@ -371,7 +416,14 @@ fun FormularioVacunacion(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(
+                    modifier = Modifier.height(
+                        dimensionAdaptada(
+                            compacta = 12.dp,
+                            normal = 20.dp
+                        )
+                    )
+                )
 
                 // Botones
                 Row(
@@ -382,7 +434,12 @@ fun FormularioVacunacion(
                         onClick = onDismiss,
                         modifier = Modifier
                             .weight(1f)
-                            .height(50.dp),
+                            .height(
+                                dimensionAdaptada(
+                                    compacta = 44.dp,
+                                    normal = 50.dp
+                                )
+                            ),
                         shape = RoundedCornerShape(50.dp),
                         colors = ButtonDefaults.textButtonColors(
                             containerColor = LavandaVacunacion,

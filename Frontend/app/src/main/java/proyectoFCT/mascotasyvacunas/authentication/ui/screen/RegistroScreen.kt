@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -51,6 +52,7 @@ import androidx.navigation.NavController
 import proyectoFCT.mascotasyvacunas.authentication.ui.viewmodel.AuthenticationViewModel
 import proyectoFCT.mascotasyvacunas.navigation.Login
 import proyectoFCT.mascotasyvacunas.ui.theme.Purple40
+import proyectoFCT.mascotasyvacunas.ui.theme.anchoDialogoAdaptado
 
 @Composable
 fun PantallaRegistro(
@@ -445,6 +447,7 @@ fun PantallaRegistro(
     // Diálogo de error
     if (mensajeError != null) {
         AlertDialog(
+            modifier = Modifier.widthIn(max = anchoDialogoAdaptado()),
             onDismissRequest = { mensajeError = null },
             icon = null,
             title = {

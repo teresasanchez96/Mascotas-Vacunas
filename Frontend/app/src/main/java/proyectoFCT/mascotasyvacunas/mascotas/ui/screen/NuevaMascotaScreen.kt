@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -67,6 +68,7 @@ import proyectoFCT.mascotasyvacunas.R
 import proyectoFCT.mascotasyvacunas.mascotas.ui.model.Mascota
 import proyectoFCT.mascotasyvacunas.mascotas.ui.viewmodel.MascotaViewModel
 import proyectoFCT.mascotasyvacunas.ui.theme.Purple40
+import proyectoFCT.mascotasyvacunas.ui.theme.anchoDialogoAdaptado
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -504,7 +506,7 @@ fun PantallaNuevaMascota(
                 ) {
                     Text(
                         text = when {
-                            subiendoFoto -> "Subiendo fotografía..."
+                            subiendoFoto -> "Guardando..."
                             mascotaId == null -> "Guardar"
                             else -> "Guardar cambios"
                         },
@@ -530,6 +532,7 @@ fun PantallaNuevaMascota(
     // Mostrar el diálogo de éxito.
     if (showSuccessDialog) {
         AlertDialog(
+            modifier = Modifier.widthIn(max = anchoDialogoAdaptado()),
             onDismissRequest = {
                 mascotaViewModel.hideSuccessDialog()
                 navController.popBackStack()
@@ -587,6 +590,7 @@ fun PantallaNuevaMascota(
     // Mostrar el diálogo de error de validación.
     if (showErrorDialog) {
         AlertDialog(
+            modifier = Modifier.widthIn(max = anchoDialogoAdaptado()),
             onDismissRequest = { showErrorDialog = false },
             title = { Text("Advertencia") },
             text = {

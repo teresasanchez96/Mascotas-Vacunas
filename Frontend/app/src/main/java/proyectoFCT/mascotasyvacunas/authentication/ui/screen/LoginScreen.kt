@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -49,6 +50,7 @@ import proyectoFCT.mascotasyvacunas.authentication.ui.viewmodel.AuthenticationVi
 import proyectoFCT.mascotasyvacunas.navigation.ListaMascotas
 import proyectoFCT.mascotasyvacunas.navigation.Registro
 import proyectoFCT.mascotasyvacunas.ui.theme.Purple40
+import proyectoFCT.mascotasyvacunas.ui.theme.anchoDialogoAdaptado
 
 @Composable
 fun LoginScreen(
@@ -281,7 +283,9 @@ fun LoginScreen(
 
     // Diálogo para mostrar errores durante el inicio de sesión
     if (mensajeError != null) {
+
         AlertDialog(
+            modifier = Modifier.widthIn(max = anchoDialogoAdaptado()),
             onDismissRequest = {
                 mensajeError = null
             },

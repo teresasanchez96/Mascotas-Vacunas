@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -57,6 +58,7 @@ import proyectoFCT.mascotasyvacunas.navigation.ListaVacunas
 import proyectoFCT.mascotasyvacunas.navigation.NuevaMascota
 import proyectoFCT.mascotasyvacunas.navigation.Perfil
 import proyectoFCT.mascotasyvacunas.ui.theme.Purple40
+import proyectoFCT.mascotasyvacunas.ui.theme.anchoDialogoAdaptado
 import java.time.LocalDate
 import java.time.Period
 import java.time.format.DateTimeFormatter
@@ -380,6 +382,7 @@ fun MyDialog(
 ) {
     if (show) {
         AlertDialog(
+            modifier = Modifier.widthIn(max = anchoDialogoAdaptado()),
             onDismissRequest = onDismiss,
             icon = {
                 Box(

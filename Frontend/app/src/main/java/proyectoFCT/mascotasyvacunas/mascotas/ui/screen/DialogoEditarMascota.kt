@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -65,6 +66,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import proyectoFCT.mascotasyvacunas.mascotas.ui.model.Mascota
 import proyectoFCT.mascotasyvacunas.ui.theme.Purple40
+import proyectoFCT.mascotasyvacunas.ui.theme.anchoDialogoAdaptado
+import proyectoFCT.mascotasyvacunas.ui.theme.dimensionAdaptada
 import java.util.Calendar
 import java.util.Locale
 
@@ -174,7 +177,12 @@ fun DialogoEditarMascota(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = 720.dp),
+                .heightIn(
+                    max = dimensionAdaptada(
+                        compacta = 620.dp,
+                        normal = 720.dp
+                    )
+                ),
             shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color(0xFFF8F3FF)
@@ -187,7 +195,16 @@ fun DialogoEditarMascota(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 18.dp, vertical = 14.dp)
+                    .padding(
+                        horizontal = dimensionAdaptada(
+                            compacta = 14.dp,
+                            normal = 18.dp
+                        ),
+                        vertical = dimensionAdaptada(
+                            compacta = 10.dp,
+                            normal = 14.dp
+                        )
+                    )
             ) {
 
                 // Cabecera del diálogo.
@@ -242,16 +259,31 @@ fun DialogoEditarMascota(
                 }
 
                 Spacer(
-                    modifier = Modifier.height(8.dp)
+                    modifier = Modifier.height(
+                        dimensionAdaptada(
+                            compacta = 4.dp,
+                            normal = 8.dp
+                        )
+                    )
                 )
 
                 // Campos del formulario.
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 500.dp)
+                        .heightIn(
+                            max = dimensionAdaptada(
+                                compacta = 450.dp,
+                                normal = 500.dp
+                            )
+                        )
                         .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(
+                        dimensionAdaptada(
+                            compacta = 6.dp,
+                            normal = 8.dp
+                        )
+                    )
                 ) {
 
                     // Fotografía de la mascota.
@@ -277,7 +309,12 @@ fun DialogoEditarMascota(
                         } else {
                             Box(
                                 modifier = Modifier
-                                    .size(80.dp)
+                                    .size(
+                                        dimensionAdaptada(
+                                            compacta = 64.dp,
+                                            normal = 80.dp
+                                        )
+                                    )
                                     .clip(RoundedCornerShape(12.dp))
                                     .background(Color(0xFFEDE1FF)),
                                 contentAlignment = Alignment.Center
@@ -302,7 +339,12 @@ fun DialogoEditarMascota(
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(40.dp),
+                                    .height(
+                                        dimensionAdaptada(
+                                            compacta = 36.dp,
+                                            normal = 40.dp
+                                        )
+                                    ),
                                 shape = RoundedCornerShape(20.dp),
                                 contentPadding = PaddingValues(
                                     horizontal = 8.dp,
@@ -341,7 +383,12 @@ fun DialogoEditarMascota(
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(40.dp),
+                                    .height(
+                                        dimensionAdaptada(
+                                            compacta = 36.dp,
+                                            normal = 40.dp
+                                        )
+                                    ),
                                 shape = RoundedCornerShape(20.dp),
                                 border = androidx.compose.foundation.BorderStroke(
                                     1.dp,
@@ -689,7 +736,9 @@ fun DialogoEditarMascota(
 
     // Confirmación para quitar la fotografía actual.
     if (mostrarConfirmacionEliminar) {
+
         AlertDialog(
+            modifier = Modifier.widthIn(max = anchoDialogoAdaptado()),
             onDismissRequest = {
                 mostrarConfirmacionEliminar = false
             },

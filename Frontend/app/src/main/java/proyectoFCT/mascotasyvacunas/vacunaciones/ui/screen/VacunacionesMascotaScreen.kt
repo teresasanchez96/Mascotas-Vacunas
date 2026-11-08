@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -72,6 +73,7 @@ import androidx.navigation.NavController
 import proyectoFCT.mascotasyvacunas.R
 import proyectoFCT.mascotasyvacunas.mascotas.ui.viewmodel.MascotaViewModel
 import proyectoFCT.mascotasyvacunas.ui.theme.Purple40
+import proyectoFCT.mascotasyvacunas.ui.theme.anchoDialogoAdaptado
 import proyectoFCT.mascotasyvacunas.vacunaciones.ui.model.Vacunacion
 import proyectoFCT.mascotasyvacunas.vacunaciones.ui.viewmodel.VacunacionViewModel
 import proyectoFCT.mascotasyvacunas.vacunas.ui.viewmodel.VacunaViewModel
@@ -503,108 +505,90 @@ fun PantallaVacunacionesMascota(
 
     // Diálogo para confirmar la eliminación
     if (mostrarDialogoEliminar && vacunacionEliminar != null) {
-        Dialog(
+        AlertDialog(
+            modifier = Modifier.widthIn(max = anchoDialogoAdaptado()),
             onDismissRequest = {
                 mostrarDialogoEliminar = false
             },
-            properties = DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth(0.82f)
-                    .widthIn(max = 360.dp),
-                shape = RoundedCornerShape(30.dp),
-                color = Color(0xFFF7F2FF),
-                shadowElevation = 8.dp
-            ) {
-                Column(
+
+            icon = {
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .size(64.dp)
+                        .background(
+                            color = Color(0xFFFCE7EB),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(68.dp)
-                            .background(
-                                color = Color(0xFFFCE7EA),
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Delete,
-                            contentDescription = "Eliminar vacunación",
-                            tint = Color(0xFFC65A70),
-                            modifier = Modifier.size(30.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text(
-                        text = "¿Eliminar vacunación?",
-                        fontSize = 22.sp,
-                        color = Color(0xFF6B50A0),
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Eliminar vacunación",
+                        tint = Color(0xFFC45C6C),
+                        modifier = Modifier.size(30.dp)
                     )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text(
-                        text = "¿Está seguro de que desea eliminar esta vacunación? Esta acción no se puede deshacer.",
-                        fontSize = 16.sp,
-                        color = Color(0xFF625D69),
-                        textAlign = TextAlign.Center,
-                        lineHeight = 21.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        TextButton(
-                            onClick = {
-                                mostrarDialogoEliminar = false
-                            }
-                        ) {
-                            Text(
-                                text = "Cancelar",
-                                color = Color(0xFF6B50A0),
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(16.dp))
-
-                        TextButton(
-                            onClick = {
-                                vacunacionEliminar?.id?.let { id ->
-                                    vacunacionViewModel.deleteVacunacion(
-                                        mascotaId = mascotaId,
-                                        id = id
-                                    )
-                                }
-                                mostrarDialogoEliminar = false
-                                vacunacionEliminar = null
-                            }
-                        ) {
-                            Text(
-                                text = "Eliminar",
-                                color = Color(0xFFD65368),
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                    }
                 }
-            }
-        }
+            },
+
+            title = {
+                Text(
+                    text = "¿Eliminar vacunación?",
+                    color = Purple40,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+            },
+
+            text = {
+                Text(
+                    text = "¿Está seguro de que desea eliminar esta vacunación? Esta acción no se puede deshacer.",
+                    color = Color(0xFF5F5965),
+                    textAlign = TextAlign.Center
+                )
+            },
+
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        vacunacionEliminar?.id?.let { id ->
+                            vacunacionViewModel.deleteVacunacion(
+                                mascotaId = mascotaId,
+                                id = id
+                            )
+                        }
+
+                        mostrarDialogoEliminar = false
+                        vacunacionEliminar = null
+                    }
+                ) {
+                    Text(
+                        text = "Eliminar",
+                        color = Color(0xFFC45C6C),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            },
+
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        mostrarDialogoEliminar = false
+                    }
+                ) {
+                    Text(
+                        text = "Cancelar",
+                        color = Purple40,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            },
+
+            containerColor = Color(0xFFF8F3FF),
+            shape = RoundedCornerShape(24.dp)
+        )
     }
 }
+
 
 
 /**
@@ -966,105 +950,85 @@ private fun TarjetaVacunacion(
 
     // Diálogo para confirmar la eliminación de la fotografía de la etiqueta.
     if (mostrarDialogoEliminarFoto) {
-        Dialog(
+        AlertDialog(
+            modifier = Modifier.widthIn(max = anchoDialogoAdaptado()),
             onDismissRequest = {
                 mostrarDialogoEliminarFoto = false
             },
-            properties = DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth(0.82f)
-                    .widthIn(max = 360.dp),
-                shape = RoundedCornerShape(30.dp),
-                color = Color(0xFFF7F2FF),
-                shadowElevation = 8.dp
-            ) {
-                Column(
+
+            icon = {
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .size(64.dp)
+                        .background(
+                            color = Color(0xFFFCE7EB),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(68.dp)
-                            .background(
-                                color = Color(0xFFFCE7EA),
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Delete,
-                            contentDescription = "Eliminar etiqueta",
-                            tint = Color(0xFFC65A70),
-                            modifier = Modifier.size(30.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text(
-                        text = "¿Eliminar etiqueta?",
-                        fontSize = 22.sp,
-                        color = Color(0xFF6B50A0),
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Eliminar etiqueta",
+                        tint = Color(0xFFC45C6C),
+                        modifier = Modifier.size(30.dp)
                     )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text(
-                        text = "¿Está seguro de que desea eliminar la fotografía de esta etiqueta? La vacunación seguirá registrada.",
-                        fontSize = 16.sp,
-                        color = Color(0xFF625D69),
-                        textAlign = TextAlign.Center,
-                        lineHeight = 21.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        TextButton(
-                            onClick = {
-                                mostrarDialogoEliminarFoto = false
-                            }
-                        ) {
-                            Text(
-                                text = "Cancelar",
-                                color = Color(0xFF6B50A0),
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(16.dp))
-
-                        TextButton(
-                            onClick = {
-                                vacunacion.id?.let { id ->
-                                    vacunacionViewModel.eliminarFotoEtiqueta(
-                                        mascotaId = mascotaId,
-                                        vacunacionId = id
-                                    )
-                                }
-                                mostrarDialogoEliminarFoto = false
-                            }
-                        ) {
-                            Text(
-                                text = "Eliminar",
-                                color = Color(0xFFD65368),
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                    }
                 }
-            }
-        }
+            },
+
+            title = {
+                Text(
+                    text = "¿Eliminar etiqueta?",
+                    color = Purple40,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+            },
+
+            text = {
+                Text(
+                    text = "¿Está seguro de que desea eliminar la fotografía de esta etiqueta? La vacunación seguirá registrada.",
+                    color = Color(0xFF5F5965),
+                    textAlign = TextAlign.Center
+                )
+            },
+
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        vacunacion.id?.let { id ->
+                            vacunacionViewModel.eliminarFotoEtiqueta(
+                                mascotaId = mascotaId,
+                                vacunacionId = id
+                            )
+                        }
+                        mostrarDialogoEliminarFoto = false
+                    }
+                ) {
+                    Text(
+                        text = "Eliminar",
+                        color = Color(0xFFC45C6C),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            },
+
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        mostrarDialogoEliminarFoto = false
+                    }
+                ) {
+                    Text(
+                        text = "Cancelar",
+                        color = Purple40,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            },
+
+            containerColor = Color(0xFFF8F3FF),
+            shape = RoundedCornerShape(24.dp)
+        )
     }
 }
 

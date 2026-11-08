@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import dagger.hilt.android.AndroidEntryPoint
 import proyectoFCT.mascotasyvacunas.navigation.AppNavigation
+import proyectoFCT.mascotasyvacunas.ui.theme.MascotasYVacunasTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -14,7 +15,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            AppNavigation()
+            MascotasYVacunasTheme {
+                AppNavigation()
+            }
         }
     }
 }

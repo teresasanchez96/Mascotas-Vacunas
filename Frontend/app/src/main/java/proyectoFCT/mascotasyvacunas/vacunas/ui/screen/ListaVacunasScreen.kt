@@ -32,7 +32,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -52,7 +51,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import proyectoFCT.mascotasyvacunas.R
@@ -60,6 +58,8 @@ import proyectoFCT.mascotasyvacunas.navigation.BarraNavegacion
 import proyectoFCT.mascotasyvacunas.navigation.ListaMascotas
 import proyectoFCT.mascotasyvacunas.navigation.Perfil
 import proyectoFCT.mascotasyvacunas.ui.theme.Purple40
+import proyectoFCT.mascotasyvacunas.ui.theme.anchoDialogoAdaptado
+import proyectoFCT.mascotasyvacunas.ui.theme.dimensionAdaptada
 import proyectoFCT.mascotasyvacunas.vacunas.ui.model.Vacuna
 import proyectoFCT.mascotasyvacunas.vacunas.ui.viewmodel.VacunaViewModel
 
@@ -191,7 +191,12 @@ fun PantallaListaVacunas(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(165.dp)
+                        .height(
+                            dimensionAdaptada(
+                                compacta = 125.dp,
+                                normal = 165.dp
+                            )
+                        )
                 ) {
 
                     Image(
@@ -210,8 +215,14 @@ fun PantallaListaVacunas(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            horizontal = 22.dp,
-                            vertical = 20.dp
+                            horizontal = dimensionAdaptada(
+                                compacta = 16.dp,
+                                normal = 22.dp
+                            ),
+                            vertical = dimensionAdaptada(
+                                compacta = 12.dp,
+                                normal = 20.dp
+                            )
                         ),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -226,7 +237,12 @@ fun PantallaListaVacunas(
                     )
 
                     Spacer(
-                        modifier = Modifier.height(10.dp)
+                        modifier = Modifier.height(
+                            dimensionAdaptada(
+                                compacta = 6.dp,
+                                normal = 10.dp
+                            )
+                        )
                     )
 
                     // Texto explicativo.
@@ -239,7 +255,12 @@ fun PantallaListaVacunas(
                     )
 
                     Spacer(
-                        modifier = Modifier.height(24.dp)
+                        modifier = Modifier.height(
+                            dimensionAdaptada(
+                                compacta = 12.dp,
+                                normal = 24.dp
+                            )
+                        )
                     )
 
                     // Nombre de la vacuna.
@@ -260,7 +281,12 @@ fun PantallaListaVacunas(
                     )
 
                     Spacer(
-                        modifier = Modifier.height(20.dp)
+                        modifier = Modifier.height(
+                            dimensionAdaptada(
+                                compacta = 12.dp,
+                                normal = 20.dp
+                            )
+                        )
                     )
 
                     // Botones de cancelar y registrar.
@@ -332,6 +358,7 @@ fun PantallaListaVacunas(
     if (showSuccessDialog) {
 
         AlertDialog(
+            modifier = Modifier.widthIn(max = anchoDialogoAdaptado()),
             onDismissRequest = {
                 vacunaViewModel.hideSuccessDialog()
             },
@@ -385,6 +412,7 @@ fun PantallaListaVacunas(
     if (message != null) {
 
         AlertDialog(
+            modifier = Modifier.widthIn(max = anchoDialogoAdaptado()),
             onDismissRequest = {
                 vacunaViewModel.clearMessage()
             },
@@ -511,24 +539,11 @@ fun DialogoEliminarVacuna(
 
     if (show) {
 
-        Dialog(
+        AlertDialog(
+            modifier = Modifier.widthIn(max = anchoDialogoAdaptado()),
             onDismissRequest = onDismiss,
-            properties = DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth(0.82f)
-                    .widthIn(max = 360.dp),
-                shape = RoundedCornerShape(30.dp),
-                color = Color(0xFFF7F2FF),
-                shadowElevation = 8.dp
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+
+            icon = {
                 Box(
                     modifier = Modifier
                         .size(64.dp)
@@ -545,58 +560,52 @@ fun DialogoEliminarVacuna(
                         modifier = Modifier.size(30.dp)
                     )
                 }
+            },
 
-                Spacer(modifier = Modifier.height(12.dp))
-
+            title = {
                 Text(
                     text = "¿Eliminar vacuna?",
-                    fontSize = 22.sp,
                     color = Purple40,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
+            },
 
-                Spacer(modifier = Modifier.height(12.dp))
+            text = {
+                Text(
+                    text = "¿Está seguro de que desea eliminar esta vacuna? Esta acción no se puede deshacer.",
+                    color = Color(0xFF5F5965),
+                    textAlign = TextAlign.Center
+                )
+            },
 
+            confirmButton = {
+                TextButton(
+                    onClick = onConfirm
+                ) {
                     Text(
-                        text = "¿Está seguro de que desea eliminar esta vacuna? Esta acción no se puede deshacer.",
-                        fontSize = 16.sp,
-                        color = Color(0xFF625D69),
-                        textAlign = TextAlign.Center,
-                        lineHeight = 21.sp
+                        text = "Eliminar",
+                        color = Color(0xFFC45C6C),
+                        fontWeight = FontWeight.SemiBold
                     )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        TextButton(
-                            onClick = onDismiss
-                        ) {
-                            Text(
-                                text = "Cancelar",
-                                color = Color(0xFF6B50A0),
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(16.dp))
-
-                        TextButton(
-                            onClick = onConfirm
-                        ) {
-                            Text(
-                                text = "Eliminar",
-                                color = Color(0xFFD65368),
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                    }
                 }
-            }
-        }
+            },
+
+            dismissButton = {
+                TextButton(
+                    onClick = onDismiss
+                ) {
+                    Text(
+                        text = "Cancelar",
+                        color = Purple40,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            },
+
+            containerColor = Color(0xFFF8F3FF),
+            shape = RoundedCornerShape(24.dp)
+        )
     }
 }
+
