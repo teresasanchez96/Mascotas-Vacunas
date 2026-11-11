@@ -195,7 +195,7 @@ fun PantallaPerfil(
             OpcionPerfil(
                 icon = Icons.Default.Person,
                 texto = "Mi cuenta",
-                descripcion = "Consultar los datos de tu cuenta",
+                descripcion = "Consulta los datos de tu cuenta",
                 onClick = { mostrarMiCuenta = true }
             )
 
@@ -207,7 +207,7 @@ fun PantallaPerfil(
             OpcionPerfil(
                 icon = Icons.Default.Lock,
                 texto = "Cambiar contraseña",
-                descripcion = "Actualizar tu contraseña de forma segura",
+                descripcion = "Actualiza tu contraseña de forma segura",
                 onClick = {
                     passwordActual = ""
                     nuevaPassword = ""
@@ -349,172 +349,159 @@ fun PantallaPerfil(
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = 20.dp, vertical = 14.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Surface(
-                            modifier = Modifier.size(48.dp),
-                            shape = CircleShape,
-                            color = Color(0xFFECE2FF)
+
+                    if (mensajeExitoPassword == null) {
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
+                            Surface(
+                                modifier = Modifier.size(48.dp),
+                                shape = CircleShape,
+                                color = Color(0xFFECE2FF)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Default.Lock,
+                                        contentDescription = null,
+                                        tint = Purple40,
+                                        modifier = Modifier.size(25.dp)
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.width(12.dp))
+
+                            Text(
+                                text = "Cambiar contraseña",
+                                color = Color(0xFF482A87),
+                                fontSize = 20.sp,
+                                lineHeight = 25.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Text(
+                            text = "Introduce tu contraseña actual y elige una nueva.",
+                            color = Color(0xFF655780),
+                            fontSize = 15.sp,
+                            lineHeight = 21.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        CampoPassword(
+                            valor = passwordActual,
+                            onValorChange = { passwordActual = it },
+                            etiqueta = "Contraseña actual",
+                            visible = mostrarPasswordActual,
+                            onCambiarVisibilidad = {
+                                mostrarPasswordActual = !mostrarPasswordActual
+                            },
+                            habilitado = !cambiandoPassword
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        CampoPassword(
+                            valor = nuevaPassword,
+                            onValorChange = { nuevaPassword = it },
+                            etiqueta = "Nueva contraseña",
+                            visible = mostrarNuevaPassword,
+                            onCambiarVisibilidad = {
+                                mostrarNuevaPassword = !mostrarNuevaPassword
+                            },
+                            habilitado = !cambiandoPassword
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        CampoPassword(
+                            valor = confirmarNuevaPassword,
+                            onValorChange = { confirmarNuevaPassword = it },
+                            etiqueta = "Confirmar nueva contraseña",
+                            visible = mostrarConfirmarPassword,
+                            onCambiarVisibilidad = {
+                                mostrarConfirmarPassword =
+                                    !mostrarConfirmarPassword
+                            },
+                            habilitado = !cambiandoPassword
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            color = Color(0xFFF0E6FF)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(11.dp),
+                                verticalAlignment = Alignment.Top
+                            ) {
                                 Icon(
-                                    imageVector = Icons.Default.Lock,
+                                    imageVector = Icons.Default.VerifiedUser,
                                     contentDescription = null,
                                     tint = Purple40,
-                                    modifier = Modifier.size(25.dp)
+                                    modifier = Modifier.size(21.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(9.dp))
+
+                                Column {
+                                    Text(
+                                        text = "Requisitos de seguridad",
+                                        color = Color(0xFF482A87),
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+
+                                    Spacer(modifier = Modifier.height(4.dp))
+
+                                    Text(
+                                        text = "• Al menos 8 caracteres\n" +
+                                                "• Diferente de la contraseña actual\n" +
+                                                "• Las nuevas contraseñas deben coincidir",
+                                        color = Color(0xFF655780),
+                                        fontSize = 13.sp,
+                                        lineHeight = 20.sp
+                                    )
+                                }
+                            }
+                        }
+
+                        if (cambiandoPassword) {
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    color = Purple40,
+                                    modifier = Modifier.size(24.dp)
                                 )
                             }
                         }
 
-                        Spacer(modifier = Modifier.width(12.dp))
+                        if (errorCuenta != null) {
+                            Spacer(modifier = Modifier.height(8.dp))
 
-                        Text(
-                            text = "Cambiar contraseña",
-                            color = Color(0xFF482A87),
-                            fontSize = 20.sp,
-                            lineHeight = 25.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text(
-                        text = "Introduce tu contraseña actual y elige una nueva.",
-                        color = Color(0xFF655780),
-                        fontSize = 15.sp,
-                        lineHeight = 21.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    CampoPassword(
-                        valor = passwordActual,
-                        onValorChange = { passwordActual = it },
-                        etiqueta = "Contraseña actual",
-                        visible = mostrarPasswordActual,
-                        onCambiarVisibilidad = {
-                            mostrarPasswordActual = !mostrarPasswordActual
-                        },
-                        habilitado = !cambiandoPassword &&
-                                mensajeExitoPassword == null
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    CampoPassword(
-                        valor = nuevaPassword,
-                        onValorChange = { nuevaPassword = it },
-                        etiqueta = "Nueva contraseña",
-                        visible = mostrarNuevaPassword,
-                        onCambiarVisibilidad = {
-                            mostrarNuevaPassword = !mostrarNuevaPassword
-                        },
-                        habilitado = !cambiandoPassword &&
-                                mensajeExitoPassword == null
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    CampoPassword(
-                        valor = confirmarNuevaPassword,
-                        onValorChange = { confirmarNuevaPassword = it },
-                        etiqueta = "Confirmar nueva contraseña",
-                        visible = mostrarConfirmarPassword,
-                        onCambiarVisibilidad = {
-                            mostrarConfirmarPassword =
-                                !mostrarConfirmarPassword
-                        },
-                        habilitado = !cambiandoPassword &&
-                                mensajeExitoPassword == null
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        color = Color(0xFFF0E6FF)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(11.dp),
-                            verticalAlignment = Alignment.Top
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.VerifiedUser,
-                                contentDescription = null,
-                                tint = Purple40,
-                                modifier = Modifier.size(21.dp)
+                            Text(
+                                text = errorCuenta.orEmpty(),
+                                color = Color(0xFFB3261E),
+                                fontSize = 12.sp
                             )
-
-                            Spacer(modifier = Modifier.width(9.dp))
-
-                            Column {
-                                Text(
-                                    text = "Requisitos de seguridad",
-                                    color = Color(0xFF482A87),
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-
-                                Spacer(modifier = Modifier.height(4.dp))
-
-                                Text(
-                                    text = "• Al menos 8 caracteres\n" +
-                                            "• Diferente de la contraseña actual\n" +
-                                            "• Las nuevas contraseñas deben coincidir",
-                                    color = Color(0xFF655780),
-                                    fontSize = 13.sp,
-                                    lineHeight = 20.sp
-                                )
-                            }
                         }
-                    }
 
-                    if (cambiandoPassword) {
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(
-                                color = Purple40,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-
-                    if (errorCuenta != null) {
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = errorCuenta.orEmpty(),
-                            color = Color(0xFFB3261E),
-                            fontSize = 12.sp
-                        )
-                    }
-
-                    if (mensajeExitoPassword != null) {
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = mensajeExitoPassword.orEmpty(),
-                            color = Color(0xFF206B3B),
-                            fontSize = 12.sp
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Button(
-                        onClick = {
-                            if (mensajeExitoPassword != null) {
-                                mostrarCambiarPassword = false
-                                cuentaViewModel.limpiarMensajes()
-                            } else {
+                        // Botón guardar contraseña
+                        Button(
+                            onClick = {
                                 when {
                                     passwordActual.isBlank() -> {
                                         cuentaViewModel.mostrarError(
@@ -549,39 +536,34 @@ fun PantallaPerfil(
                                         )
                                     }
                                 }
+                            },
+                            enabled = !cambiandoPassword,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(44.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Purple40
+                            )
+                        ) {
+                            if (cambiandoPassword) {
+                                CircularProgressIndicator(
+                                    color = Color.White,
+                                    modifier = Modifier.size(19.dp),
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Text(
+                                    text = "Guardar contraseña",
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
                             }
-                        },
-                        enabled = !cambiandoPassword,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(44.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Purple40
-                        )
-                    ) {
-                        if (cambiandoPassword) {
-                            CircularProgressIndicator(
-                                color = Color.White,
-                                modifier = Modifier.size(19.dp),
-                                strokeWidth = 2.dp
-                            )
-                        } else {
-                            Text(
-                                text = if (mensajeExitoPassword != null) {
-                                    "Aceptar"
-                                } else {
-                                    "Guardar contraseña"
-                                },
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
                         }
-                    }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                    if (mensajeExitoPassword == null) {
+                        //Botón cancelar
                         OutlinedButton(
                             onClick = {
                                 mostrarCambiarPassword = false
@@ -606,11 +588,80 @@ fun PantallaPerfil(
                                 fontWeight = FontWeight.SemiBold
                             )
                         }
+
+                    } else {
+
+                        // Confirmación del cambio de contraseña
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 10.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Surface(
+                                modifier = Modifier.size(60.dp),
+                                shape = CircleShape,
+                                color = Color(0xFFECE2FF)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Default.VerifiedUser,
+                                        contentDescription = null,
+                                        tint = Purple40,
+                                        modifier = Modifier.size(34.dp)
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(14.dp))
+
+                            Text(
+                                text = "Contraseña actualizada",
+                                color = Color(0xFF482A87),
+                                fontSize = 19.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Text(
+                                text = "Tu contraseña se ha cambiado correctamente. Inicia sesión con tu nueva contraseña para continuar.",
+                                color = Color(0xFF655780),
+                                fontSize = 14.sp,
+                                textAlign = TextAlign.Center,
+                                lineHeight = 21.sp
+                            )
+
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Button(
+                                onClick = {
+                                    mostrarCambiarPassword = false
+                                    cuentaViewModel.limpiarMensajes()
+                                    perfilViewModel.cerrarSesion()
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(46.dp),
+                                shape = RoundedCornerShape(24.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Purple40
+                                )
+                            ) {
+                                Text(
+                                    text = "Aceptar",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
     }
+
 
     // Información de la aplicación
     if (mostrarInformacion) {
@@ -806,14 +857,14 @@ private fun CampoPassword(
     visible: Boolean,
     onCambiarVisibilidad: () -> Unit,
     habilitado: Boolean,
-    altura: Dp = 56.dp
+    altura: Dp = 64.dp
 ) {
     OutlinedTextField(
         value = valor,
         onValueChange = onValorChange,
         modifier = Modifier
             .fillMaxWidth()
-            .height(altura),
+            .heightIn(min = altura),
         enabled = habilitado,
         singleLine = true,
         label = {
@@ -869,6 +920,7 @@ private fun CampoPassword(
         )
     )
 }
+
 @Composable
 private fun OpcionPerfil(
     icon: ImageVector,
@@ -924,7 +976,7 @@ private fun OpcionPerfil(
                 Text(
                     text = descripcion,
                     color = Color(0xFF756A83),
-                    fontSize = 14.sp
+                    fontSize = 13.sp
                 )
             }
 

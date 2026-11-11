@@ -106,7 +106,7 @@ class CuentaViewModel @Inject constructor(
                 resultado.fold(
                     onSuccess = {
                         _mensajeExito.value =
-                            "La contraseña se ha cambiado correctamente."
+                            "¡La contraseña se ha cambiado correctamente!\n\nPor seguridad, debes iniciar sesión de nuevo con tu nueva contraseña."
                     },
                     onFailure = { error ->
                         _error.value = error.message
