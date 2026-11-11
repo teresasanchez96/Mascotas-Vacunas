@@ -9,6 +9,7 @@ import proyecto.mascotasvacunas.entity.Mascota;
 import proyecto.mascotasvacunas.entity.Usuario;
 import proyecto.mascotasvacunas.repository.MascotaRepository;
 import proyecto.mascotasvacunas.repository.UsuarioRepository;
+import proyecto.mascotasvacunas.repository.VacunacionRepository;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,14 +25,17 @@ public class MascotaService {
     private final MascotaRepository mascotaRepository;
     private final UsuarioRepository usuarioRepository;
     private final FotoMascotaService fotoMascotaService;
+    private final VacunacionRepository vacunacionRepository;
 
     public MascotaService(
             MascotaRepository mascotaRepository,
             UsuarioRepository usuarioRepository,
-            FotoMascotaService fotoMascotaService) {
+            FotoMascotaService fotoMascotaService,
+            VacunacionRepository vacunacionRepository) {
         this.mascotaRepository = mascotaRepository;
         this.usuarioRepository = usuarioRepository;
         this.fotoMascotaService = fotoMascotaService;
+        this.vacunacionRepository = vacunacionRepository;
     }
 
     // Obtiene las mascotas del usuario que ha iniciado sesión.
@@ -137,8 +141,13 @@ public class MascotaService {
         Mascota mascota = findById(id);
         String foto = mascota.getFotoMascota();
 
+        // Primero elimina todas las vacunaciones de esa mascota.
+        vacunacionRepository.deleteByMascota_Id(id);
+
+        // Después elimina la mascota.
         mascotaRepository.delete(mascota);
 
+        // Elimina la fotografía de la mascota, si existe.
         if (foto != null && !foto.isBlank()) {
             try {
                 fotoMascotaService.eliminarFoto(foto);

@@ -9,6 +9,7 @@ import proyecto.mascotasvacunas.entity.Usuario;
 import proyecto.mascotasvacunas.entity.Vacuna;
 import proyecto.mascotasvacunas.repository.UsuarioRepository;
 import proyecto.mascotasvacunas.repository.VacunaRepository;
+import proyecto.mascotasvacunas.repository.VacunacionRepository;
 
 import java.util.List;
 
@@ -21,11 +22,14 @@ public class VacunaService {
 
     private final VacunaRepository vacunaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final VacunacionRepository vacunacionRepository;
 
     public VacunaService(VacunaRepository vacunaRepository,
-                         UsuarioRepository usuarioRepository) {
+                         UsuarioRepository usuarioRepository,
+                         VacunacionRepository vacunacionRepository) {
         this.vacunaRepository = vacunaRepository;
         this.usuarioRepository = usuarioRepository;
+        this.vacunacionRepository = vacunacionRepository;
     }
 
     // Obtiene las vacunas del usuario que ha iniciado sesión.
@@ -77,10 +81,18 @@ public class VacunaService {
         return vacunaRepository.save(vacuna);
     }
 
-    // Elimina una vacuna perteneciente al usuario.
+    // Elimina una vacuna perteneciente al usuario si no está en uso.
     public void delete(Long id) {
 
         Vacuna vacuna = findById(id);
+
+        // Comprueba si la vacuna está asociada a alguna vacunación.
+        if (vacunacionRepository.existsByVacuna_Id(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "No se puede eliminar esta vacuna porque está asociada "
+                            + "a una o varias vacunaciones de tus mascotas.");
+        }
 
         vacunaRepository.delete(vacuna);
     }
