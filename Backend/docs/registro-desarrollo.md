@@ -1,6 +1,6 @@
 # Registro de desarrollo de la API REST
 
-## Día 1 — 29/09/2026 — Creación y configuración inicial
+## 29/09/2026 — Creación y configuración inicial
 
 Durante esta primera fase he creado la API REST utilizando Spring Boot y he realizado la configuración inicial del proyecto.
 
@@ -28,7 +28,7 @@ He realizado el siguiente commit:
 `Creación del modelo de datos y estructura inicial de la API REST`
 
 
-## Día 2 — 01/10/2026 — Ajustes del modelo de datos y autenticación
+## 01/10/2026 — Ajustes del modelo de datos y autenticación
 
 Durante esta fase he realizado algunos ajustes en el modelo de datos de la API y he comenzado la implementación del sistema de autenticación y seguridad de los usuarios.
 
@@ -63,7 +63,7 @@ He realizado los siguientes commits:
 
 `Implementar autenticación de usuarios con JWT y BCrypt`
 
-## Día 3 — 03/10/2026 — Desarrollo y pruebas de la API
+## 03/10/2026 — Desarrollo y pruebas de la API
 
 ### Trabajo realizado
 
@@ -93,7 +93,7 @@ He realizado los siguientes commits:
 
 `Actualizar documentación del proyecto`
 
-## Día 4 — 24/10/2026 — Reorganización de la estructura del proyecto
+## 24/10/2026 — Reorganización de la estructura del proyecto
 
 Durante esta fase he comenzado a reorganizar una copia del proyecto para separar la aplicación Android de la API REST y facilitar su mantenimiento.
 
@@ -114,7 +114,7 @@ La reorganización se registró mediante el siguiente commit, realizado el 25/10
 
 `Reorganizar proyecto en Frontend y Backend`
 
-## Día 5 — 25/10/2026 — Implementación de fotografías de mascotas
+## 25/10/2026 — Implementación de fotografías de mascotas
 
 Durante esta fase he incorporado la funcionalidad para gestionar fotografías reales de las mascotas en la API REST.
 
@@ -139,7 +139,7 @@ He realizado el siguiente commit en la API original:
 
 `Implementar la gestión de fotografías de mascotas`
 
-## Día 6 — 26/10/2026 — Implementación de fotografías de las etiquetas de las vacunas
+## 26/10/2026 — Implementación de fotografías de las etiquetas de las vacunas
 
 Durante esta fase he comenzado a adaptar la API REST original para permitir guardar y consultar fotografías de las etiquetas de las vacunas administradas a las mascotas.
 
@@ -165,7 +165,7 @@ He utilizado ChatGPT y Codex como herramientas de apoyo durante el desarrollo pa
 
 `Actualizar documentación del proyecto`
 
-## Día 7 — 30/10/2026 — Mejoras en seguridad y gestión de la API REST
+## 30/10/2026 — Mejoras en seguridad y gestión de la API REST
 
 Durante esta fase he continuado adaptando la API REST original para mejorar la seguridad, la gestión de las cuentas de usuario y el tratamiento de errores.
 
@@ -200,7 +200,7 @@ He realizado los siguientes commits:
 
 `Actualizar registro de desarrollo de la API REST`
 
-## Día 8 — 02/11/2026 — Implementación de la eliminación de fotografías
+## 02/11/2026 — Implementación de la eliminación de fotografías
 
 Durante esta fase he ampliado la API REST para permitir eliminar las fotografías de las mascotas y las fotografías de las etiquetas de vacunación, además de retirar sus referencias de la base de datos.
 
@@ -220,8 +220,36 @@ He utilizado ChatGPT como herramienta de apoyo durante el desarrollo para revisa
 
 ### Control de versiones
 
-He realizado el siguiente commit:
+He realizado los siguientes commits:
 
 `Gestionar la eliminación de fotos de mascotas y etiquetas de vacunación`
+
+`Actualizar registro de desarrollo de la API REST`
+
+## 11/11/2026 — Mejoras en la gestión de eliminación de mascotas y vacunas
+
+Durante esta fase he mejorado la gestión de eliminación de mascotas y vacunas en la API REST, incorporando comprobaciones para mantener la coherencia de los datos y evitar problemas con las relaciones entre entidades.
+
+### Trabajo realizado
+
+- Adaptación de `MascotaService` para eliminar primero las vacunaciones asociadas a una mascota antes de eliminar la propia mascota.
+- Incorporación en `VacunacionRepository` del método `deleteByMascota_Id` para eliminar las vacunaciones asociadas a una mascota.
+- Incorporación en `VacunacionRepository` del método `existsByVacuna_Id` para comprobar si una vacuna está asociada a alguna vacunación.
+- Adaptación de `VacunaService` para impedir la eliminación de vacunas que estén asociadas a una o varias vacunaciones.
+- Incorporación de una respuesta de conflicto HTTP 409 cuando se intenta eliminar una vacuna que está en uso.
+- Traslado de los cambios a la API REST original.
+- Comprobación del funcionamiento de los cambios realizados.
+
+### Uso de herramientas de IA
+
+He utilizado ChatGPT como herramienta de apoyo durante el desarrollo para revisar los cambios realizados en los servicios y repositorios, resolver dudas sobre las relaciones entre mascotas, vacunas y vacunaciones, y comprobar la gestión de las eliminaciones.
+
+Las propuestas obtenidas se han revisado y probado durante el desarrollo antes de incorporarlas al proyecto.
+
+### Control de versiones
+
+He realizado los siguientes commits:
+
+`Mejorar la gestión de eliminación de mascotas y vacunas`
 
 `Actualizar registro de desarrollo de la API REST`
