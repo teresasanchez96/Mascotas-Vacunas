@@ -105,9 +105,12 @@ class VacunaViewModel @Inject constructor(
                 result.fold(
                     onSuccess = {
                         cargarVacunas()
-                        changeShowDialog()
+                        _showDialog.value = false
                     },
                     onFailure = {
+                        // Cierra el diálogo de confirmación.
+                        _showDialog.value = false
+
                         _message.value =
                             it.message ?: "Error al eliminar la vacuna"
                     }

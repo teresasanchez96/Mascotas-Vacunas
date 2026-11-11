@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -183,7 +184,8 @@ fun PantallaListaVacunas(
                     .widthIn(max = 360.dp)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(28.dp))
-                    .background(Color(0xFFF8F3FF)
+                    .background(
+                        Color(0xFFF8F3FF)
                     )
             ) {
 
@@ -408,26 +410,56 @@ fun PantallaListaVacunas(
         )
     }
 
-    // Mensaje cuando ocurre un error.
+
+// Mensaje cuando ocurre un error.
     if (message != null) {
 
         AlertDialog(
             modifier = Modifier.widthIn(max = anchoDialogoAdaptado()),
+
             onDismissRequest = {
                 vacunaViewModel.clearMessage()
             },
 
+            icon = null,
+
             title = {
-                Text(
-                    text = "No se puede eliminar",
-                    color = Purple40,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                color = Color(0xFFE8DDF8),
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.WarningAmber,
+                            contentDescription = null,
+                            tint = Purple40,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    Text(
+                        text = "No se puede eliminar",
+                        color = Purple40,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        softWrap = false
+                    )
+                }
             },
 
             text = {
                 Text(
-                    text = message ?: ""
+                    text = message ?: "",
+                    color = Color(0xFF625D68)
                 )
             },
 
@@ -437,18 +469,22 @@ fun PantallaListaVacunas(
                         vacunaViewModel.clearMessage()
                     }
                 ) {
-
                     Text(
                         text = "Aceptar",
-                        color = Purple40
+                        color = Purple40,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
-            }
+            },
+
+            shape = RoundedCornerShape(24.dp),
+            containerColor = Color(0xFFF9F6FF),
+            tonalElevation = 6.dp
         )
     }
 }
 
-@Composable
+    @Composable
 fun VacunaItem(
     vacuna: Vacuna,
     vacunaViewModel: VacunaViewModel
