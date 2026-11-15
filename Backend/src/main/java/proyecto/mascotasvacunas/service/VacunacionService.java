@@ -15,6 +15,7 @@ import proyecto.mascotasvacunas.repository.VacunaRepository;
 import proyecto.mascotasvacunas.repository.VacunacionRepository;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 /*
@@ -79,6 +80,15 @@ public class VacunacionService {
     public Vacunacion update(Long id, Vacunacion vacunacionDetails) {
 
         Vacunacion vacunacion = findById(id);
+
+        if (Boolean.TRUE.equals(vacunacionDetails.getVacunaAdministrada())
+                && vacunacionDetails.getFechaPrevista().isAfter(LocalDate.now())) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "No se puede marcar la vacuna como administrada antes de la fecha prevista"
+            );
+        }
 
         vacunacion.setFechaPrevista(
                 vacunacionDetails.getFechaPrevista()
