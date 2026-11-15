@@ -27,11 +27,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -43,10 +43,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -61,6 +61,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -80,6 +81,7 @@ import proyectoFCT.mascotasyvacunas.vacunas.ui.viewmodel.VacunaViewModel
 import java.time.LocalDate
 import java.time.Period
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 @Composable
 fun PantallaVacunacionesMascota(
@@ -610,7 +612,7 @@ private fun TarjetaVacunacion(
         Color(0xFFEF6C00)
     }
 
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
 
     var mostrarFotoEtiquetaAmpliada by remember {
         mutableStateOf(false)
@@ -753,6 +755,67 @@ private fun TarjetaVacunacion(
                 }
             }
 
+            // Recordatorio visual de la vacunación pendiente.
+            if (!vacunacion.vacunaAdministrada) {
+                val diasRestantes = calcularDiasHastaFechaPrevista(vacunacion.fechaPrevista)
+
+                val mensajeRecordatorio = when {
+                    diasRestantes == null -> null
+                    diasRestantes == 0L -> "¡Hoy toca vacunar!"
+                    diasRestantes in 1L..7L -> {
+                        if (diasRestantes == 1L) {
+                            "Próxima vacunación · Falta 1 día"
+                        } else {
+                            "Próxima vacunación · Faltan $diasRestantes días"
+                        }
+                    }
+                    diasRestantes < 0L -> {
+                        val diasRetraso = -diasRestantes
+                        if (diasRetraso == 1L) {
+                            "Vacunación pendiente · 1 día de retraso"
+                        } else {
+                            "Vacunación pendiente · $diasRetraso días de retraso"
+                        }
+                    }
+                    else -> null
+                }
+
+                if (mensajeRecordatorio != null) {
+                    val colorFondoRecordatorio = when {
+                        diasRestantes != null && diasRestantes < 0L -> Color(0xFFFCE8E8)
+                        else -> Color(0xFFFFF1E5)
+                    }
+                    val colorTextoRecordatorio = when {
+                        diasRestantes != null && diasRestantes < 0L -> Color(0xFFC62828)
+                        else -> Color(0xFFEF6C00)
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(colorFondoRecordatorio)
+                            .padding(horizontal = 12.dp, vertical = 9.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "Recordatorio de vacunación",
+                            tint = colorTextoRecordatorio,
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = mensajeRecordatorio,
+                            color = colorTextoRecordatorio,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+
             if (vacunacion.vacunaAdministrada && vacunacion.fechaAdministracion != null) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
@@ -792,7 +855,10 @@ private fun TarjetaVacunacion(
                 }
             }
 
+            // Sección de la etiqueta de la vacuna.
             if (vacunacion.vacunaAdministrada) {
+
+                if (fotoEtiqueta != null) {
                 Spacer(modifier = Modifier.height(12.dp))
                 HorizontalDivider(color = Color(0xFFE5DCEF))
                 Spacer(modifier = Modifier.height(10.dp))
@@ -813,68 +879,41 @@ private fun TarjetaVacunacion(
                         .clip(RoundedCornerShape(12.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (fotoEtiqueta != null) {
-                        Image(
-                            bitmap = fotoEtiqueta.asImageBitmap(),
-                            contentDescription =
-                            "Ver etiqueta de ${vacunacion.vacuna.nombreVacuna} ampliada",
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clickable {
-                                    mostrarFotoEtiquetaAmpliada = true
-                                }
-                        )
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color(0xFFF1EBFA))
-                                .clickable {
-                                    selectorImagen.launch("image/*")
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.AddPhotoAlternate,
-                                contentDescription = "Añadir etiqueta",
-                                tint = Purple40,
-                                modifier = Modifier.size(32.dp)
-                            )
-                        }
-                    }
+                    Image(
+                        bitmap = fotoEtiqueta.asImageBitmap(),
+                        contentDescription =
+                        "Ver etiqueta de ${vacunacion.vacuna.nombreVacuna} ampliada",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable {
+                                mostrarFotoEtiquetaAmpliada = true
+                            }
+                    )
                 }
-
-                Spacer(modifier = Modifier.height(2.dp))
-
+                }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                TextButton(
-                    onClick = {
-                        selectorImagen.launch("image/*")
-                    },
-                    modifier = Modifier.height(36.dp),
-                    contentPadding = PaddingValues(0.dp)
-                ) {
-                    Text(
-                        text = if (
-                            fotoEtiqueta != null ||
-                            !vacunacion.fotoEtiqueta.isNullOrBlank()
-                        ) {
-                            "Cambiar etiqueta"
-                        } else {
-                            "Añadir etiqueta"
+                    TextButton(
+                        onClick = {
+                            selectorImagen.launch("image/*")
                         },
-                        color = Purple40,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-                    if (
-                        fotoEtiqueta != null ||
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Text(
+                            text = if (fotoEtiqueta != null ||
+                                !vacunacion.fotoEtiqueta.isNullOrBlank()
+                            ) "Cambiar etiqueta" else "Añadir etiqueta",
+                            color = Purple40,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+
+                    if (fotoEtiqueta != null ||
                         !vacunacion.fotoEtiqueta.isNullOrBlank()
                     ) {
                         TextButton(
@@ -892,10 +931,10 @@ private fun TarjetaVacunacion(
                     }
                 }
             }
+
         }
 
     }
-
 
     // Diálogo para consultar la etiqueta completa al pulsar su imagen.
     if (vacunacion.vacunaAdministrada && mostrarFotoEtiquetaAmpliada && fotoEtiqueta != null) {
@@ -1029,6 +1068,31 @@ private fun TarjetaVacunacion(
             containerColor = Color(0xFFF8F3FF),
             shape = RoundedCornerShape(24.dp)
         )
+    }
+}
+
+/**
+ * Calcula los días que faltan para la fecha prevista de vacunación.
+ */
+private fun calcularDiasHastaFechaPrevista(
+    fechaPrevista: String
+): Long? {
+    return try {
+        val fecha = try {
+            LocalDate.parse(
+                fechaPrevista,
+                DateTimeFormatter.ISO_LOCAL_DATE
+            )
+        } catch (e: Exception) {
+            LocalDate.parse(
+                fechaPrevista,
+                DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            )
+        }
+
+        ChronoUnit.DAYS.between(LocalDate.now(), fecha)
+    } catch (e: Exception) {
+        null
     }
 }
 

@@ -384,6 +384,7 @@ fun FormularioVacunacion(
 
                             Switch(
                                 checked = vacunaAdministrada,
+                                enabled = vacunaAdministrada || fechaPrevista.isNotBlank() && fechaPrevistaAlcanzada(fechaPrevista),
                                 onCheckedChange = {
                                     vacunaAdministrada = it
 
@@ -408,7 +409,8 @@ fun FormularioVacunacion(
                         onClick = {
                             mostrarSelectorFecha(
                                 context = context,
-                                fechaActual = fechaAdministracion
+                                fechaActual = fechaAdministracion,
+                                permitirFechaFutura = false
                             ) {
                                 fechaAdministracion = it
                             }
@@ -611,4 +613,30 @@ private fun mostrarSelectorFecha(
     }
 
     selector.show()
+}
+
+private fun fechaPrevistaAlcanzada(fechaPrevista: String): Boolean {
+    return try {
+        val partes = fechaPrevista.split("/")
+
+        val dia = partes[0].toInt()
+        val mes = partes[1].toInt()
+        val anio = partes[2].toInt()
+
+        val fecha = Calendar.getInstance().apply {
+            set(anio, mes - 1, dia, 0, 0, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        val hoy = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        !fecha.after(hoy)
+    } catch (e: Exception) {
+        false
+    }
 }
