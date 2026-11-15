@@ -237,7 +237,6 @@ Durante esta fase he mejorado la gestión de eliminación de mascotas y vacunas 
 - Incorporación en `VacunacionRepository` del método `existsByVacuna_Id` para comprobar si una vacuna está asociada a alguna vacunación.
 - Adaptación de `VacunaService` para impedir la eliminación de vacunas que estén asociadas a una o varias vacunaciones.
 - Incorporación de una respuesta de conflicto HTTP 409 cuando se intenta eliminar una vacuna que está en uso.
-- Traslado de los cambios a la API REST original.
 - Comprobación del funcionamiento de los cambios realizados.
 
 ### Uso de herramientas de IA
@@ -251,5 +250,30 @@ Las propuestas obtenidas se han revisado y probado durante el desarrollo antes d
 He realizado los siguientes commits:
 
 `Mejorar la gestión de eliminación de mascotas y vacunas`
+
+`Actualizar registro de desarrollo de la API REST`
+
+## 15/11/2026 — Validación de las fechas de administración de vacunas
+
+Durante esta fase he mejorado la gestión de las vacunaciones en la API REST, incorporando una comprobación para evitar que una vacuna se marque como administrada antes de su fecha prevista.
+
+### Trabajo realizado
+
+- Adaptación de `VacunacionService` para comprobar que la fecha de administración no sea anterior a la fecha prevista.
+- Incorporación de una respuesta de error HTTP 400 cuando se intenta marcar una vacuna como administrada antes de la fecha prevista.
+- Comprobación del funcionamiento de la validación mediante pruebas en Postman.
+- Verificación de que se rechazan las fechas de administración anteriores a la fecha prevista y se permiten las fechas iguales o posteriores.
+
+### Uso de herramientas de IA
+
+He utilizado ChatGPT como herramienta de apoyo durante el desarrollo para revisar los cambios realizados en `VacunacionService`, resolver dudas sobre la validación de las fechas y comprobar los casos de prueba.
+
+Las propuestas obtenidas se han revisado y probado durante el desarrollo antes de incorporarlas al proyecto.
+
+### Control de versiones
+
+He realizado los siguientes commits:
+
+`Validar que la fecha de administración no sea anterior a la fecha prevista`
 
 `Actualizar registro de desarrollo de la API REST`
