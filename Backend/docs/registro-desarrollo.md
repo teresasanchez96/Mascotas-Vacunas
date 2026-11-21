@@ -63,6 +63,7 @@ He realizado los siguientes commits:
 
 `Implementar autenticación de usuarios con JWT y BCrypt`
 
+
 ## 03/10/2026 — Desarrollo y pruebas de la API
 
 ### Trabajo realizado
@@ -77,7 +78,7 @@ Durante las pruebas de vacunaciones he corregido la configuración de la relaci�
 
 Por último, he comprobado el funcionamiento de la API después de realizar estos cambios.
 
-### Uso de IA
+### Uso de herramientas de IA
 
 He utilizado ChatGPT como herramienta de apoyo durante el desarrollo para revisar los cambios realizados en los servicios, repositorios y controladores, analizar posibles problemas y resolver dudas durante las pruebas de la API.
 
@@ -93,9 +94,10 @@ He realizado los siguientes commits:
 
 `Actualizar documentación del proyecto`
 
+
 ## 24/10/2026 — Reorganización de la estructura del proyecto
 
-Durante esta fase he comenzado a reorganizar una copia del proyecto para separar la aplicación Android de la API REST y facilitar su mantenimiento.
+Durante esta fase he reorganizado la estructura del proyecto para separar la aplicación Android de la API REST y facilitar su mantenimiento.
 
 ### Trabajo realizado
 
@@ -113,6 +115,7 @@ He utilizado ChatGPT y Codex como herramientas de apoyo para revisar la nueva es
 La reorganización se registró mediante el siguiente commit, realizado el 25/10/2026:
 
 `Reorganizar proyecto en Frontend y Backend`
+
 
 ## 25/10/2026 — Implementación de fotografías de mascotas
 
@@ -135,13 +138,14 @@ He utilizado ChatGPT y Codex como herramientas de apoyo para implementar la gest
 
 ### Control de versiones
 
-He realizado el siguiente commit en la API original:
+He realizado el siguiente commit:
 
 `Implementar la gestión de fotografías de mascotas`
 
+
 ## 26/10/2026 — Implementación de fotografías de las etiquetas de las vacunas
 
-Durante esta fase he comenzado a adaptar la API REST original para permitir guardar y consultar fotografías de las etiquetas de las vacunas administradas a las mascotas.
+Durante esta fase he adaptado la API REST para permitir guardar y consultar fotografías de las etiquetas de las vacunas administradas a las mascotas.
 
 ### Trabajo realizado
 
@@ -161,13 +165,16 @@ He utilizado ChatGPT y Codex como herramientas de apoyo durante el desarrollo pa
 
 ### Control de versiones
 
+He realizado el siguiente commit:
+
 `Implementar la gestión de fotografías de etiquetas de vacunación`
 
 `Actualizar documentación del proyecto`
 
+
 ## 30/10/2026 — Mejoras en seguridad y gestión de la API REST
 
-Durante esta fase he continuado adaptando la API REST original para mejorar la seguridad, la gestión de las cuentas de usuario y el tratamiento de errores.
+Durante esta fase he continuado desarrollando la API REST para mejorar la seguridad, la gestión de las cuentas de usuario y el tratamiento de errores.
 
 ### Trabajo realizado
 
@@ -200,6 +207,7 @@ He realizado los siguientes commits:
 
 `Actualizar registro de desarrollo de la API REST`
 
+
 ## 02/11/2026 — Implementación de la eliminación de fotografías
 
 Durante esta fase he ampliado la API REST para permitir eliminar las fotografías de las mascotas y las fotografías de las etiquetas de vacunación, además de retirar sus referencias de la base de datos.
@@ -225,6 +233,7 @@ He realizado los siguientes commits:
 `Gestionar la eliminación de fotos de mascotas y etiquetas de vacunación`
 
 `Actualizar registro de desarrollo de la API REST`
+
 
 ## 11/11/2026 — Mejoras en la gestión de eliminación de mascotas y vacunas
 
@@ -253,6 +262,7 @@ He realizado los siguientes commits:
 
 `Actualizar registro de desarrollo de la API REST`
 
+
 ## 15/11/2026 — Validación de las fechas de administración de vacunas
 
 Durante esta fase he mejorado la gestión de las vacunaciones en la API REST, incorporando una comprobación para evitar que una vacuna se marque como administrada antes de su fecha prevista.
@@ -275,5 +285,52 @@ Las propuestas obtenidas se han revisado y probado durante el desarrollo antes d
 He realizado los siguientes commits:
 
 `Validar que la fecha de administración no sea anterior a la fecha prevista`
+
+`Actualizar registro de desarrollo de la API REST`
+
+
+## 21/11/2026 — Implementación de datos de prueba y pruebas unitarias
+
+Durante esta fase he implementado la carga automática de datos de prueba y he incorporado pruebas unitarias para comprobar el funcionamiento de algunos componentes de la API REST.
+
+### Implementación de datos de prueba
+
+- Creación de la clase `DatosPruebaConfig` para configurar la carga automática de datos de prueba al iniciar la aplicación.
+- Implementación de la creación del usuario de prueba, con sus credenciales de acceso.
+- Incorporación de cinco mascotas de distintas especies con sus correspondientes fotografías.
+- Creación de siete vacunas asociadas al usuario de prueba.
+- Incorporación de siete vacunaciones, incluyendo registros administrados y pendientes.
+- Implementación de comprobaciones individuales para evitar la creación de registros duplicados.
+- Configuración de la copia de las fotografías de mascotas y etiquetas de vacunación a sus respectivos directorios de almacenamiento.
+
+### Incorporación y ejecución de pruebas unitarias
+
+- Creación de la estructura de directorios `src/test/java`.
+- Creación de los paquetes `proyecto.mascotasvacunas.dto` y `proyecto.mascotasvacunas.security`.
+- Incorporación de la clase `RegistroRequestTest` para comprobar las validaciones de los datos del registro de usuarios.
+- Incorporación de la clase `JwtServiceTest` para comprobar la generación, extracción y validación de tokens JWT.
+- Ejecución de las pruebas unitarias mediante IntelliJ IDEA.
+- Verificación de que las seis pruebas unitarias finalizan correctamente, sin errores.
+
+### Resultados de las pruebas
+
+- `JwtServiceTest`: 3 pruebas superadas.
+- `RegistroRequestTest`: 3 pruebas superadas.
+
+**Resultado total: 6 pruebas superadas de 6 ejecutadas.**
+
+### Uso de herramientas de IA
+
+He utilizado ChatGPT como herramienta de apoyo durante la implementación de la carga de datos de prueba, la incorporación de comprobaciones para evitar duplicados y la preparación y revisión de las pruebas unitarias.
+
+Las propuestas obtenidas se han revisado durante el desarrollo y las pruebas unitarias se han ejecutado para comprobar su funcionamiento.
+
+### Control de versiones
+
+He realizado los siguientes commits:
+
+`Añadir datos de prueba para mascotas, vacunas y vacunaciones`
+
+`Añadir pruebas unitarias para autenticación JWT y registro de usuarios`
 
 `Actualizar registro de desarrollo de la API REST`
