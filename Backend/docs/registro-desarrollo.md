@@ -334,3 +334,30 @@ He realizado los siguientes commits:
 `Añadir pruebas unitarias para autenticación JWT y registro de usuarios`
 
 `Actualizar registro de desarrollo de la API REST`
+
+## 24/11/2026 — Mejora de la configuración de seguridad y gestión de credenciales
+
+Durante esta fase he mejorado la configuración de seguridad de la API REST, modificando la gestión de las credenciales y de la clave secreta utilizada para generar los tokens JWT.
+
+### Configuración mediante variables de entorno
+
+- Eliminación de los valores predeterminados de la clave secreta JWT y de las credenciales de acceso a la base de datos del archivo `application.properties`.
+- Configuración de `JWT_SECRET` para proporcionar la clave secreta utilizada en la firma de los tokens JWT.
+- Configuración de `DB_USER` y `DB_PASSWORD` para gestionar las credenciales de acceso a MariaDB mediante variables de entorno.
+- Mantenimiento de los parámetros de conexión de la base de datos, permitiendo configurar el servidor, el puerto y el nombre de la base de datos.
+- Configuración de las variables de entorno en IntelliJ IDEA para la ejecución local de la API.
+
+### Verificación del funcionamiento
+
+- Inicio correcto de la API REST con la nueva configuración.
+- Comprobación de la conexión con la base de datos MariaDB.
+- Verificación del funcionamiento de la autenticación mediante tokens JWT.
+- Prueba de acceso desde la aplicación Android, comprobando el inicio de sesión y la carga de los datos.
+
+### Control de versiones
+
+He realizado el siguiente commit:
+
+`Mejorar la configuración de seguridad de la API`
+
+`Actualizar registro de desarrollo de la API REST`
