@@ -361,3 +361,28 @@ He realizado el siguiente commit:
 `Mejorar la configuración de seguridad de la API`
 
 `Actualizar registro de desarrollo de la API REST`
+
+
+## 25/11/2026 — Preparación del despliegue de la API REST mediante Docker
+
+Durante esta fase he preparado la API REST para su despliegue en Railway mediante Docker.
+
+### Configuración de Docker
+
+- Creación del archivo `Dockerfile`.
+- Configuración de una compilación por etapas utilizando Maven y Java 17.
+- Configuración de la imagen de ejecución para iniciar la API mediante el archivo JAR generado y exponer el puerto 8080.
+
+### Comprobaciones realizadas
+
+- Revisión de la configuración de `application.properties` para comprobar la gestión de las credenciales de MariaDB y la clave JWT mediante variables de entorno.
+- Comprobación de la configuración de conexión a la base de datos tanto para el entorno local como para producción.
+- Ejecución de la compilación mediante `mvn clean package -DskipTests`, obteniendo un resultado correcto (`BUILD SUCCESS`).
+
+### Control de versiones
+
+He realizado el siguiente commit:
+
+`Añadir la configuración Docker para el despliegue de la API`
+
+`Actualizar registro de desarrollo de la API REST`
