@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY pom.xml .
 COPY src ./src
+COPY datos-prueba ./datos-prueba
 
 RUN mvn clean package -DskipTests
 
@@ -12,6 +13,7 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/datos-prueba ./datos-prueba
 
 EXPOSE 8080
 
