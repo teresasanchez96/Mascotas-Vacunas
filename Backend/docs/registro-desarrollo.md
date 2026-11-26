@@ -386,3 +386,26 @@ He realizado el siguiente commit:
 `Añadir la configuración Docker para el despliegue de la API`
 
 `Actualizar registro de desarrollo de la API REST`
+
+## 26/11/2026 — Corrección de la configuración Docker para el despliegue de la API REST
+
+Durante esta fase he corregido la configuración Docker de la API REST para solucionar un problema detectado durante el despliegue en Railway.
+
+### Corrección de la configuración Docker
+
+- Revisión de los registros de Railway para identificar el error producido durante el arranque de la aplicación.
+- Detección de un problema al intentar acceder a las imágenes utilizadas por `DatosPruebaConfig` para cargar los datos de prueba.
+- Modificación del archivo `Dockerfile` para incluir la carpeta `datos-prueba` en la etapa de construcción.
+- Incorporación de dicha carpeta a la imagen final de ejecución para que las imágenes estén disponibles cuando se inicie la API.
+
+### Comprobaciones realizadas
+
+- Revisión de la estructura de directorios del proyecto y de la ubicación de los recursos de prueba.
+- Comprobación de los registros de ejecución para identificar la causa del fallo.
+- Revisión de la configuración del Dockerfile para garantizar la inclusión de los recursos necesarios durante el despliegue.
+
+### Control de versiones
+
+`Actualizar la configuración Docker para el despliegue de la API`
+
+`Actualizar registro de desarrollo de la API REST`
