@@ -387,25 +387,40 @@ He realizado el siguiente commit:
 
 `Actualizar registro de desarrollo de la API REST`
 
-## 26/11/2026 — Corrección de la configuración Docker para el despliegue de la API REST
 
-Durante esta fase he corregido la configuración Docker de la API REST para solucionar un problema detectado durante el despliegue en Railway.
+## 26/11/2026 — Correcciones en la configuración Docker y en el funcionamiento de la API REST
 
-### Corrección de la configuración Docker
+Durante esta fase he realizado varias correcciones en la API REST para solucionar problemas detectados durante el despliegue y las pruebas funcionales.
+
+### 1. Corrección de la configuración Docker para el despliegue de la API REST
 
 - Revisión de los registros de Railway para identificar el error producido durante el arranque de la aplicación.
 - Detección de un problema al intentar acceder a las imágenes utilizadas por `DatosPruebaConfig` para cargar los datos de prueba.
 - Modificación del archivo `Dockerfile` para incluir la carpeta `datos-prueba` en la etapa de construcción.
 - Incorporación de dicha carpeta a la imagen final de ejecución para que las imágenes estén disponibles cuando se inicie la API.
 
-### Comprobaciones realizadas
+### 2. Corrección de la eliminación de mascotas con vacunaciones asociadas
 
-- Revisión de la estructura de directorios del proyecto y de la ubicación de los recursos de prueba.
-- Comprobación de los registros de ejecución para identificar la causa del fallo.
-- Revisión de la configuración del Dockerfile para garantizar la inclusión de los recursos necesarios durante el despliegue.
+- Detección de un problema al eliminar mascotas que tenían vacunaciones registradas.
+- Revisión del método `delete()` de `MascotaService` y de las operaciones de eliminación de las vacunaciones asociadas.
+- Incorporación de la anotación `@Transactional` para garantizar que las operaciones de eliminación se ejecuten dentro de una misma transacción.
+- Comprobación del funcionamiento mediante pruebas de eliminación de mascotas con vacunaciones asociadas.
+
+### 3. Comprobaciones realizadas
+
+- Revisión de los registros de ejecución de Railway para identificar la causa del fallo de despliegue.
+- Revisión de la configuración del Dockerfile y de la inclusión de los recursos necesarios.
+- Pruebas de eliminación de mascotas con y sin vacunaciones asociadas.
+- Comprobación del correcto funcionamiento de la API tras las modificaciones.
+
+### Uso de herramientas de IA
+
+He utilizado ChatGPT como herramienta de apoyo durante la revisión de la configuración Docker para el despliegue de la API REST y la corrección del problema relacionado con la eliminación de mascotas con vacunaciones asociadas.
+
+Las propuestas obtenidas se han revisado durante el desarrollo, incorporando los cambios necesarios y realizando pruebas para comprobar su correcto funcionamiento.
 
 ### Control de versiones
 
-`Actualizar la configuración Docker para el despliegue de la API`
-
-`Actualizar registro de desarrollo de la API REST`
+- `Actualizar la configuración Docker para el despliegue de la API`
+- `Corregir la eliminación de mascotas con vacunaciones asociadas`
+- `Actualizar registro de desarrollo de la API REST`
