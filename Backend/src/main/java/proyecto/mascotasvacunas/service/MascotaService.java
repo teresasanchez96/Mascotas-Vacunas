@@ -10,6 +10,7 @@ import proyecto.mascotasvacunas.entity.Usuario;
 import proyecto.mascotasvacunas.repository.MascotaRepository;
 import proyecto.mascotasvacunas.repository.UsuarioRepository;
 import proyecto.mascotasvacunas.repository.VacunacionRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
@@ -136,6 +137,7 @@ public class MascotaService {
         }
     }
 
+    @Transactional
     // Elimina una mascota perteneciente al usuario y su fotografía, si tiene una.
     public void delete(Long id) {
         Mascota mascota = findById(id);
