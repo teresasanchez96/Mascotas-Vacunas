@@ -320,6 +320,7 @@ class MascotaViewModel @Inject constructor(
 
                         if (fotoGuardada) {
                             recargarFotoMascota(id)
+                            cargarMascotas()
                             onFotoActualizada?.invoke()
                             _message.value =
                                 "Datos y fotografía actualizados correctamente"
